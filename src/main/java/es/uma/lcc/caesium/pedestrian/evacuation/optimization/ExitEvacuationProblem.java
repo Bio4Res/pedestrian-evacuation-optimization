@@ -1,6 +1,7 @@
 package es.uma.lcc.caesium.pedestrian.evacuation.optimization;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Access;
@@ -36,6 +37,12 @@ public class ExitEvacuationProblem {
 	 * width of exits
 	 */
 	private double exitWidth;
+	/**
+	 * A list of the exits initially contained in the environment (it may be empty). 
+	 * These are kept fixed, and stored in order to restore the environment after adding 
+	 * potential exits during simulation.
+	 */
+	private ArrayList<Access> current;
 	
 	// TODO
 	// There must be some member fields to account for the simulator and maybe
@@ -52,6 +59,7 @@ public class ExitEvacuationProblem {
 		base = env;
 		Domain d = base.getDomain(1); // assume a single domain
 		perimeterLength = 2*(d.getHeight()+d.getWidth());
+		current = new ArrayList<Access>(base.getDomain(1).getAccesses());
 		setExitWidth(DEFAULT_EXIT_WIDTH); 
 	}
 	
@@ -131,6 +139,10 @@ public class ExitEvacuationProblem {
 		// of the simulation, or separate methods can be created to obtain 
 		// different performance indicators of the simulator (number of people
 		// that got out, time of the last person, ...)
+		base.getDomain(1).getAccesses().addAll(accesses);
+		// simulate
+		base.getDomain(1).getAccesses().clear();
+		base.getDomain(1).getAccesses().addAll(current);
 	}
 	
 	
