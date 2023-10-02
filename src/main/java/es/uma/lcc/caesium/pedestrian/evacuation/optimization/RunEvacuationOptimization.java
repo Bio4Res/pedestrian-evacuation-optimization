@@ -42,7 +42,9 @@ public class RunEvacuationOptimization {
 		// Configure the problem
 	    Environment environment = Environment.fromFile(args[1]);
 	    int numExits = Integer.parseInt(args[2]);
-		myEA.setObjectiveFunction(new EvacuationProblem(numExits, environment));
+	    ExitEvacuationProblem eep = new ExitEvacuationProblem (environment, numExits);
+	    System.out.println(eep);
+		myEA.setObjectiveFunction(new PerimetralExitOptimizationFunction(eep));
 		myEA.getStatistics().setDiversityMeasure(new VarianceDiversity());
 		for (int i=0; i<numruns; i++) {
 			myEA.run();
