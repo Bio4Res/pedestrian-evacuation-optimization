@@ -5,12 +5,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>es.uma.lcc.caesium</groupId>
-  <artifactId>evacuation-optimization</artifactId>
+  <artifactId>pedestrian-evacuation-optimization</artifactId>
   <version>0.0.1-SNAPSHOT</version>
 
-  <name>evacuation-optimization</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <name>pedestrian-evacuation-optimization</name>
+  <url>http://bio4res.lcc.uma.es</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
