@@ -3,16 +3,25 @@ package es.uma.lcc.caesium.pedestrian.evacuation.optimization;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.CellularAutomaton;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.CellularAutomatonParameters;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.floorField.DijkstraStaticFloorFieldWithMooreNeighbourhood;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.neighbourhood.MooreNeighbourhood;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.pedestrian.PedestrianParameters;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.scenario.Scenario;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Access;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Domain;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Environment;
+
+import static es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.statistics.Random.random;
 
 /**
  * Evacuation problem: given an environment, find the location of a number
  * of exits in order to speed-up evacuation in case of emergency. Assumes 
  * that the environment has a single domain (in addition to the outside).
- * @author ccottap
+ * @author ccottap, ppgllrd
  * @version 1.0
  *
  */
@@ -24,15 +33,15 @@ public class ExitEvacuationProblem {
 	/**
 	 * the environment whose evacuation is optimized
 	 */
-	private Environment base;
+	private final Environment base;
 	/**
 	 * number of exits
 	 */
-	private int numExits;
+	private final int numExits;
 	/**
 	 * length of the perimeter
 	 */
-	private double perimeterLength;
+	private final double perimeterLength;
 	/**
 	 * width of exits
 	 */
@@ -42,7 +51,7 @@ public class ExitEvacuationProblem {
 	 * These are kept fixed, and stored in order to restore the environment after adding 
 	 * potential exits during simulation.
 	 */
-	private ArrayList<Access> current;
+	private final ArrayList<Access> current;
 	
 	// TODO
 	// There must be some member fields to account for the simulator and maybe
@@ -59,7 +68,7 @@ public class ExitEvacuationProblem {
 		base = env;
 		Domain d = base.getDomain(1); // assume a single domain
 		perimeterLength = 2*(d.getHeight()+d.getWidth());
-		current = new ArrayList<Access>(base.getDomain(1).getAccesses());
+		current = new ArrayList<>(base.getDomain(1).getAccesses());
 		setExitWidth(DEFAULT_EXIT_WIDTH); 
 	}
 	
@@ -83,7 +92,7 @@ public class ExitEvacuationProblem {
 	}
 
 	/**
-	 * Returns the the perimeter length
+	 * Returns the perimeter length
 	 * @return the perimeter length
 	 */
 	public double getPerimeterLength() {
@@ -139,22 +148,55 @@ public class ExitEvacuationProblem {
 		// of the simulation, or separate methods can be created to obtain 
 		// different performance indicators of the simulator (number of people
 		// that got out, time of the last person, ...)
-		base.getDomain(1).getAccesses().addAll(accesses);
+
+		var domain = base.getDomain(1);
+		var domainAccesses = domain.getAccesses();
+		domainAccesses.addAll(accesses);
+
 		// simulate
-		base.getDomain(1).getAccesses().clear();
-		base.getDomain(1).getAccesses().addAll(current);
+
+		// TODO set simulator parameters properly
+
+		Scenario scenario = new Scenario.FromDomainBuilder(domain)
+				.cellDimension(domain.getWidth() / 110)
+				.floorField(DijkstraStaticFloorFieldWithMooreNeighbourhood::of)
+				.build();
+
+		var cellularAutomatonParameters =
+				new CellularAutomatonParameters.Builder()
+						.scenario(scenario) // use this scenario
+						.timeLimit(10 * 60) // 10 minutes is time limit for simulation
+						.neighbourhood(MooreNeighbourhood::of) // use Moore's Neighbourhood for automaton
+						.pedestrianVelocity(1.3) // fastest pedestrians walk at 1.3 m/s
+						.build();
+
+		var automaton = new CellularAutomaton(cellularAutomatonParameters);
+
+		// place pedestrians
+		Supplier<PedestrianParameters> pedestrianParametersSupplier = () ->
+				new PedestrianParameters.Builder()
+						.fieldAttractionBias(random.nextDouble(0.65, 2.0))
+						.crowdRepulsion(random.nextDouble(1.00, 1.50))
+						.velocityPercent(random.nextDouble(0.3, 1.0))
+						.build();
+
+		var numberOfPedestrians = random.nextInt(150, 600);
+		automaton.addPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
+
+		automaton.run();
+
+		// TODO gather metrics from simulation
+
+		domainAccesses.clear();
+		domainAccesses.addAll(current);
 	}
 	
 	
 	@Override
 	public String toString() {
-		String str = "Evacuation Problem\n------------------" 
-				+ "\nEnvironment:     " + base.jsonPrettyPrinted() 
+		return "Evacuation Problem\n------------------"
+				+ "\nEnvironment:     " + base.jsonPrettyPrinted()
 				+ "\nNumber of exits: " + numExits
 				+ "\nExit width:      " + exitWidth;
-		
-		return str;
 	}
-
-
 }
