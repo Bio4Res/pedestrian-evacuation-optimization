@@ -8,7 +8,7 @@
             "offspring" : 99,
             "maxevals" : 100000,
             "initialization" : {
-                "name": "randomvector",
+                "name": "randomvector"
             },
             "selection" : {
                 "name" : "tournament",
@@ -23,9 +23,9 @@
                     "name" : "gaussian",
                     "parameters" : ["0.6321", "1", "true"]
                 }
-            ]
+            ],
             "replacement" : {
-                "name" : "comma",
+                "name" : "comma"
             }
         }
     ]
