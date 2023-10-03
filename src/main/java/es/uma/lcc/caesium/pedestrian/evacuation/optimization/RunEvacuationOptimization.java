@@ -37,6 +37,7 @@ public class RunEvacuationOptimization {
 		FileReader reader = new FileReader(args[0]);
 		conf = new EAConfiguration((JsonObject) Jsoner.deserialize(reader));
 		int numruns = conf.getNumRuns();
+		long firstSeed = conf.getSeed();
 		System.out.println(conf);
 		EvolutionaryAlgorithm myEA = new EvolutionaryAlgorithm(conf);
 		// Configure the problem
@@ -47,7 +48,10 @@ public class RunEvacuationOptimization {
 		myEA.setObjectiveFunction(new PerimetralExitOptimizationFunction(eep));
 		myEA.getStatistics().setDiversityMeasure(new VarianceDiversity());
 		for (int i=0; i<numruns; i++) {
-			myEA.run();
+			long seed = firstSeed + i;
+			// set seed for running simulator and EA
+			es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.statistics.Random.random.setSeed(seed);
+			myEA.run(seed);
 			System.out.println ("Run " + i + ": " + 
 								String.format(Locale.US, "%.2f", myEA.getStatistics().getTime(i)) + "s\t" +
 								myEA.getStatistics().getBest(i).getFitness());
@@ -56,6 +60,4 @@ public class RunEvacuationOptimization {
 		file.print(myEA.getStatistics().toJSON().toJson());
 		file.close();
 	}
-	
-
 }
