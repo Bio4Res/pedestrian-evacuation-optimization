@@ -1,0 +1,680 @@
+{
+	"domains" : [
+      {
+        "id" : 1,
+        "height" : 45,
+        "width" : 55,
+        "obstacles" : [
+          {
+            "name" : "topcorner",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                    "x" : 0,
+                    "y" : 39
+                },
+                "width" : 2,
+                "height" : 6
+            }
+          },
+          {
+            "name" : "seafood",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                    "x" : 6,
+                    "y" : 39
+                },
+                "width" : 3,
+                "height" : 4
+            }
+          },
+          {
+            "name" : "meet1",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                "x" : 12,
+                "y" : 39
+              },
+              "width" : 2,
+              "height" : 4
+            }
+          },
+          {
+            "name" : "meet2",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                "x" : 16,
+                "y" : 39
+              },
+              "width" : 2,
+              "height" : 4
+            }
+          },
+          {
+            "name" : "meet3",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                "x" : 22,
+                "y" : 39
+              },
+              "width" : 2,
+              "height" : 4
+            }
+          },
+          {
+            "name" : "meet4",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                "x" : 26,
+                "y" : 39
+              },
+              "width" : 2,
+              "height" : 4
+            }
+          },
+          {
+            "name" : "dairy1",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                "x" : 36,
+                "y" : 39
+              },
+              "width" : 2,
+              "height" : 4
+            }
+          },
+          {
+            "name" : "dairy2",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                "x" : 40,
+                "y" : 39
+              },
+              "width" : 2,
+              "height" : 4
+            }
+          },
+          {
+            "name" : "wine1",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                "x" : 48,
+                "y" : 41
+              },
+              "width" : 5,
+              "height" : 1
+            }
+          },
+          {
+            "name" : "wine2",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                "x" : 48,
+                "y" : 38
+              },
+              "width" : 5,
+              "height" : 1
+            }
+          },
+          {
+            "name" : "wine3",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                "x" : 48,
+                "y" : 35
+              },
+              "width" : 5,
+              "height" : 1
+            }
+          },
+          {
+            "name" : "bakery1",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                "x" : 48,
+                "y" : 32
+              },
+              "width" : 2,
+              "height" : 1
+            }
+          },
+          {
+            "name" : "bakery2",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                "x" : 51,
+                "y" : 32
+              },
+              "width" : 2,
+              "height" : 1
+            }
+          },
+          {
+            "name" : "bakery3",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                "x" : 48,
+                "y" : 28
+              },
+              "width" : 2,
+              "height" : 1
+            }
+          },
+          {
+            "name" : "bakery4",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                "x" : 51,
+                "y" : 28
+              },
+              "width" : 2,
+              "height" : 1
+            }
+          },
+          {
+            "name" : "bakery5",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                "x" : 48,
+                "y" : 24
+              },
+              "width" : 2,
+              "height" : 1
+            }
+          },
+          {
+            "name" : "bakery6",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                "x" : 51,
+                "y" : 24
+              },
+              "width" : 2,
+              "height" : 1
+            }
+          },
+          {
+            "name" : "deli1",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                "x" : 48,
+                "y" : 20
+              },
+              "width" : 5,
+              "height" : 1
+            }
+          },
+          {
+            "name" : "deli2",
+            "shape" : {
+              "type" : "rectangle",
+              "bottomLeft" : {
+                "x" : 48,
+                "y" : 15
+              },
+              "width" : 5,
+              "height" : 1
+            }
+          },
+          {
+            "name": "deli3",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 48,
+                "y": 10
+              },
+              "width": 5,
+              "height": 1
+            }
+          },
+          {
+            "name" : "grocery1",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 12,
+                "y": 24
+              },
+              "width": 2,
+              "height": 13
+            }
+          },
+          {
+            "name" : "grocery2",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 17,
+                "y": 24
+              },
+              "width": 2,
+              "height": 13
+            }
+          },
+          {
+            "name" : "grocery3",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 22,
+                "y": 24
+              },
+              "width": 2,
+              "height": 13
+            }
+          },
+          {
+            "name" : "grocery4",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 27,
+                "y": 24
+              },
+              "width": 2,
+              "height": 13
+            }
+          },
+          {
+            "name" : "grocery5",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 32,
+                "y": 24
+              },
+              "width": 2,
+              "height": 13
+            }
+          },
+          {
+            "name" : "grocery6",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 37,
+                "y": 24
+              },
+              "width": 2,
+              "height": 13
+            }
+          },
+          {
+            "name" : "grocery7",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 42,
+                "y": 24
+              },
+              "width": 2,
+              "height": 13
+            }
+          },
+          {
+            "name" : "frozen1",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 12,
+                "y": 29
+              },
+              "width": 2,
+              "height": 12
+            }
+          },
+          {
+            "name" : "frozen2",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 17,
+                "y": 9
+              },
+              "width": 2,
+              "height": 12
+            }
+          },
+          {
+            "name" : "frozen3",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 22,
+                "y": 9
+              },
+              "width": 2,
+              "height": 12
+            }
+          },
+          {
+            "name" : "frozen4",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 27,
+                "y": 9
+              },
+              "width": 2,
+              "height": 12
+            }
+          },
+          {
+            "name" : "frozen5",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 32,
+                "y": 9
+              },
+              "width": 2,
+              "height": 12
+            }
+          },
+          {
+            "name" : "frozen6",
+            "type" : "rectangle",
+            "shape": {
+              "bottomLeft": {
+                "x": 37,
+                "y": 9
+              },
+              "width": 2,
+              "height": 12
+            }
+          },
+          {
+            "name" : "frozen7",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 42,
+                "y": 9
+              },
+              "width": 2,
+              "height": 12
+            }
+          },
+          {
+            "name" : "bulk1",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 8,
+                "y": 34
+              },
+              "width": 2,
+              "height": 3
+            }
+          },
+          {
+            "name" : "bulk2",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 8,
+                "y": 29
+              },
+              "width": 2,
+              "height": 3
+            }
+          },
+          {
+            "name" : "bulk3",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 3,
+                "y": 35
+              },
+              "width": 2,
+              "height": 3
+            }
+          },
+          {
+            "name" : "produce1",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 3,
+                "y": 25
+              },
+              "width": 5,
+              "height": 1
+            }
+          },
+          {
+            "name" : "produce2",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 3,
+                "y": 21
+              },
+              "width": 5,
+              "height": 1
+            }
+          },
+          {
+            "name" : "produce3",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 3,
+                "y": 17
+              },
+              "width": 2,
+              "height": 1
+            }
+          },
+          {
+            "name" : "produce4",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 6,
+                "y": 17
+              },
+              "width": 2,
+              "height": 1
+            }
+          },
+          {
+            "name" : "produce5",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 3,
+                "y": 13
+              },
+              "width": 2,
+              "height": 1
+            }
+          },
+          {
+            "name" : "produce6",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 6,
+                "y": 13
+              },
+              "width": 2,
+              "height": 1
+            }
+          },
+          {
+            "name" : "produce7",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 3,
+                "y": 9
+              },
+              "width": 2,
+              "height": 1
+            }
+          },
+          {
+            "name" : "produce8",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 6,
+                "y": 9
+              },
+              "width": 2,
+              "height": 1
+            }
+          },
+          {
+            "name" : "florist",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 3,
+                "y": 4
+              },
+              "width": 4,
+              "height": 1
+            }
+          },
+          {
+            "name" : "south1",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 24,
+                "y": 3
+              },
+              "width": 1,
+              "height": 3
+            }
+          },
+          {
+            "name" : "south2",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 27,
+                "y": 3
+              },
+              "width": 1,
+              "height": 3
+            }
+          },
+          {
+            "name" : "south3",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 30,
+                "y": 3
+              },
+              "width": 1,
+              "height": 3
+            }
+          },
+          {
+            "name" : "south4",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 33,
+                "y": 3
+              },
+              "width": 1,
+              "height": 3
+            }
+          },
+          {
+            "name" : "south5",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 36,
+                "y": 3
+              },
+              "width": 1,
+              "height": 3
+            }
+          },
+          {
+            "name" : "south6",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 39,
+                "y": 3
+              },
+              "width": 1,
+              "height": 3
+            }
+          },
+          {
+            "name" : "south7",
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 42,
+                "y": 3
+              },
+              "width": 1,
+              "height": 3
+            }
+          }
+         ],
+        "accesses" : [
+          {
+            "id" : 0,
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 21,
+                "y": 0
+              },
+              "width": 8,
+              "height": 0.1
+            }
+          },
+          {
+            "id" : 1,
+            "shape": {
+              "type" : "rectangle",
+              "bottomLeft": {
+                "x": 54.9,
+                "y": 22
+              },
+              "width": 0.1,
+              "height": 7
+            }
+          }
+        ]
+      }
+    ],
+    "gateways" : [
+      {
+        "id" : 0,
+        "domain1" : 1,
+        "domain2" : 0
+      }
+    ]
+}
