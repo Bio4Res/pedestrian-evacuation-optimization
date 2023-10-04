@@ -51,7 +51,7 @@ public class RunEvacuationOptimization {
 			long seed = firstSeed + i;
 			// set seed for running simulator and EA
 			es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.statistics.Random.random.setSeed(seed);
-			myEA.run(seed);
+			myEA.run(seed); 
 			System.out.println ("Run " + i + ": " + 
 								String.format(Locale.US, "%.2f", myEA.getStatistics().getTime(i)) + "s\t" +
 								myEA.getStatistics().getBest(i).getFitness());
