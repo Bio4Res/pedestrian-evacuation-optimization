@@ -38,9 +38,9 @@
     </dependency>
     <dependency>
       <groupId>es.uma.lcc.caesium</groupId>
-      <artifactId>
-        pedestrian-evacuation-simulator-cellular-automaton
-      </artifactId>
+        <artifactId>
+			pedestrian-evacuation-simulator-cellular-automaton
+		</artifactId>
       <version>1.0.0</version>
     </dependency>
 </dependencies>
