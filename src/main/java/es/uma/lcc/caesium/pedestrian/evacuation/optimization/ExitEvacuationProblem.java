@@ -33,7 +33,7 @@ public class ExitEvacuationProblem {
 	/**
 	 * the environment whose evacuation is optimized
 	 */
-	private final Environment base;
+	private final Environment environment;
 	/**
 	 * number of exits
 	 */
@@ -51,7 +51,7 @@ public class ExitEvacuationProblem {
 	 * These are kept fixed, and stored in order to restore the environment after adding 
 	 * potential exits during simulation.
 	 */
-	private final ArrayList<Access> current;
+	private final ArrayList<Access> fixedAccesses;
 	
 	// TODO
 	// There must be some member fields to account for the simulator and maybe
@@ -60,27 +60,27 @@ public class ExitEvacuationProblem {
 	/**
 	 * Basic constructor
 	 * @param env the environment
-	 * @param i the number of exits
+	 * @param numExits the number of exits
 	 */
-	public ExitEvacuationProblem(Environment env, int i) {
+	public ExitEvacuationProblem(Environment env, int numExits) {
 		assert env.getDomainsIDs().size() == 1 : "Too many domains";
-		numExits = i;
-		base = env;
-		Domain d = base.getDomain(1); // assume a single domain
+		this.numExits = numExits;
+		environment = env;
+		Domain d = environment.getDomain(1); // assume a single domain
 		perimeterLength = 2*(d.getHeight()+d.getWidth());
-		current = new ArrayList<>(base.getDomain(1).getAccesses());
+		fixedAccesses = new ArrayList<>(environment.getDomain(1).getAccesses());
 		setExitWidth(DEFAULT_EXIT_WIDTH); 
 	}
 	
 	/**
 	 * Creates the problem indicating the environment, the number of exits and their width
 	 * @param env the environment
-	 * @param i the number of exits
-	 * @param e the exit width
+	 * @param numExits the number of exits
+	 * @param width the exit width
 	 */
-	public ExitEvacuationProblem(Environment env, int i, double e) {
-		this(env, i);
-		setExitWidth(e);
+	public ExitEvacuationProblem(Environment env, int numExits, double width) {
+		this(env, numExits);
+		setExitWidth(width);
 	}
 	
 	/**
@@ -111,10 +111,10 @@ public class ExitEvacuationProblem {
 
 	/**
 	 * Sets the exit width
-	 * @param e the exit width to set
+	 * @param width the exit width to set
 	 */
-	public void setExitWidth(double e) {
-		exitWidth = e;
+	public void setExitWidth(double width) {
+		exitWidth = width;
 	}
 	
 	
@@ -123,7 +123,7 @@ public class ExitEvacuationProblem {
 	 * @return the width of the environment
 	 */
 	public double getWidth() {
-		return base.getDomain(1).getWidth();
+		return environment.getDomain(1).getWidth();
 	}
 	
 	
@@ -132,7 +132,7 @@ public class ExitEvacuationProblem {
 	 * @return the height of the environment
 	 */
 	public double geHeight() {
-		return base.getDomain(1).getHeight();
+		return environment.getDomain(1).getHeight();
 	}
 	
 	
@@ -141,7 +141,7 @@ public class ExitEvacuationProblem {
 	 * to the environment.
 	 * @param accesses list of exits to be added to the environment
 	 */
-	public void simulate (List<Access> accesses) {
+	public double simulate (List<Access> accesses) {
 		// TODO
 		// Complete this method with the simulation
 		// A suitable class or record can be created to return the outcome
@@ -149,7 +149,7 @@ public class ExitEvacuationProblem {
 		// different performance indicators of the simulator (number of people
 		// that got out, time of the last person, ...)
 
-		var domain = base.getDomain(1);
+		var domain = environment.getDomain(1);
 		var domainAccesses = domain.getAccesses();
 		domainAccesses.addAll(accesses);
 
@@ -165,7 +165,7 @@ public class ExitEvacuationProblem {
 		var cellularAutomatonParameters =
 				new CellularAutomatonParameters.Builder()
 						.scenario(scenario) // use this scenario
-						.timeLimit(10 * 60) // 10 minutes is time limit for simulation
+						.timeLimit(2 * 60) // 2 minutes is time limit for simulation
 						.neighbourhood(MooreNeighbourhood::of) // use Moore's Neighbourhood for automaton
 						.pedestrianVelocity(1.3) // fastest pedestrians walk at 1.3 m/s
 						.build();
@@ -180,7 +180,7 @@ public class ExitEvacuationProblem {
 						.velocityPercent(random.nextDouble(0.3, 1.0))
 						.build();
 
-		var numberOfPedestrians = random.nextInt(150, 600);
+		var numberOfPedestrians = 600; // random.nextInt(150, 600);
 		automaton.addPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
 
 		automaton.run();
@@ -188,14 +188,17 @@ public class ExitEvacuationProblem {
 		// TODO gather metrics from simulation
 
 		domainAccesses.clear();
-		domainAccesses.addAll(current);
+		domainAccesses.addAll(fixedAccesses);
+
+		// TODO compute fitness
+		return automaton.computeStatistics().numberOfEvacuees();
 	}
 	
 	
 	@Override
 	public String toString() {
 		return "Evacuation Problem\n------------------"
-				+ "\nEnvironment:     " + base.jsonPrettyPrinted()
+				+ "\nEnvironment:     " + environment.jsonPrettyPrinted()
 				+ "\nNumber of exits: " + numExits
 				+ "\nExit width:      " + exitWidth;
 	}
