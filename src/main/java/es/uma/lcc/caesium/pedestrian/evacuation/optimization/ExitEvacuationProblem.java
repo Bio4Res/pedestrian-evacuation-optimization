@@ -60,7 +60,11 @@ public class ExitEvacuationProblem {
 	// TODO
 	// There must be some member fields to account for the simulator and maybe
 	// the simulator parameters
-	
+
+	// TODO make this a parameter
+	private final double timeLimit = 1 * 60; // 1 minute is time limit for simulation
+
+
 	/**
 	 * Basic constructor
 	 * @param env the environment
@@ -140,8 +144,6 @@ public class ExitEvacuationProblem {
 		return environment.getDomain(1).getHeight();
 	}
 
-	// TODO make this a parameter
-	private final double timeLimit = 1 * 60; // 1 minute is time limit for simulation
 
 	/**
 	 * Simulates the evacuation given the list of exits are added
@@ -185,12 +187,9 @@ public class ExitEvacuationProblem {
 
 		automaton.run();
 
-		// TODO gather metrics from simulation
-
 		domainAccesses.clear();
 		domainAccesses.addAll(fixedAccesses);
 
-		// TODO compute fitness
 		return fitness(automaton);
 	}
 
