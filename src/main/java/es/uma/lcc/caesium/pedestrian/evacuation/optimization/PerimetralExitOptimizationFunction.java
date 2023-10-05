@@ -66,9 +66,26 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 	 */
 	public OptimizationSense getOptimizationSense()
 	{
-		return OptimizationSense.MAXIMIZATION;
+		return OptimizationSense.MINIMIZATION;
 	}
 
+	/*                                                       <---
+	                                           right             |
+  2w+h--------------------------------|--------|-----------w+h |
+	   |                                 --------            |
+	   |                                                     |
+ top -                                                     -
+	   ||                                                   ||
+	   ||                                                   ||
+	   ||                                                   ||
+	   -                                                     - bottom
+	   |                                                     |
+	   |            -------                                  |   ^
+	   0-----------|-------|---------------------------------w   |
+                 left                                          |
+     0 --->                                                ----
+
+	 */
 
 	/**
 	 * Returns a list of rectangles corresponding to segments of an exit located
@@ -77,40 +94,39 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 	 * @return a list of rectangles corresponding to segments of such exit.
 	 */
 	private List<Shape.Rectangle> locationToRectangles(double location) {
-		var exitHeight = 0.1;
+		var exitHeight = 0.1; // an exit is going to be represented as a rectangle. This is its height
 		var remainingExitLength = exitWidth;
-		var loc = location;
 		List<Shape.Rectangle> rectangles = new LinkedList<>();
 		while(remainingExitLength > 0) {
-			while (loc >= perimeterLength)
-				loc -= perimeterLength;
-			if (loc < width) {
+			while (location >= perimeterLength)
+				location -= perimeterLength;
+			if (location < width) {
 				// horizontal. bottom. left to right
-				var left = loc;
+				var left = location;
 				var rectangleWidth = Math.min(remainingExitLength, width - left);
 				rectangles.add(new Shape.Rectangle(left, 0, rectangleWidth, exitHeight));
-				loc += rectangleWidth;
+				location += rectangleWidth;
 				remainingExitLength -= rectangleWidth;
-			} else if (loc < (width + height)) {
+			} else if (location < (width + height)) {
 				// vertical. right. bottom to top
-				var bottom = loc - width;
+				var bottom = location - width;
 				var rectangleHeight = Math.min(remainingExitLength, height - bottom);
 				rectangles.add(new Shape.Rectangle(width - exitHeight, bottom, exitHeight, rectangleHeight));
-				loc += rectangleHeight;
+				location += rectangleHeight;
 				remainingExitLength -= rectangleHeight;
-			} else if (loc < (2 * width + height)) {
+			} else if (location < (2 * width + height)) {
 				// horizontal. top. right to left
-				var right = width - (loc - (width + height));
+				var right = width - (location - (width + height));
 				var rectangleWidth = Math.min(remainingExitLength, right);
 				rectangles.add(new Shape.Rectangle(right - rectangleWidth, height - exitHeight, rectangleWidth, exitHeight));
-				loc += rectangleWidth;
+				location += rectangleWidth;
 				remainingExitLength -= rectangleWidth;
 			} else {
 				// vertical. left. top to bottom
-				var top = height - (loc - (2 * width + height));
+				var top = height - (location - (2 * width + height));
 				var rectangleHeight = Math.min(remainingExitLength, top);
 				rectangles.add(new Shape.Rectangle(0, top - rectangleHeight, exitHeight, rectangleHeight));
-				loc += rectangleHeight;
+				location += rectangleHeight;
 				remainingExitLength -= rectangleHeight;
 			}
 		}

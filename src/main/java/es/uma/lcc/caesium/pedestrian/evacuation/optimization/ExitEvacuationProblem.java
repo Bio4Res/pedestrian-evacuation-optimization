@@ -14,7 +14,7 @@ import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.aut
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Access;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Domain;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Environment;
-
+import static es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.statistics.Descriptive.*;
 import static es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.statistics.Random.random;
 
 /**
@@ -43,6 +43,10 @@ public class ExitEvacuationProblem {
 	 */
 	private final double perimeterLength;
 	/**
+	 * Diameter of domain
+	 */
+	private final double diameter;
+	/**
 	 * width of exits
 	 */
 	private double exitWidth;
@@ -68,6 +72,7 @@ public class ExitEvacuationProblem {
 		environment = env;
 		Domain d = environment.getDomain(1); // assume a single domain
 		perimeterLength = 2*(d.getHeight()+d.getWidth());
+		diameter = Math.sqrt(Math.pow(d.getHeight(), 2) + Math.pow(d.getWidth(), 2));
 		fixedAccesses = new ArrayList<>(environment.getDomain(1).getAccesses());
 		setExitWidth(DEFAULT_EXIT_WIDTH); 
 	}
@@ -134,21 +139,16 @@ public class ExitEvacuationProblem {
 	public double geHeight() {
 		return environment.getDomain(1).getHeight();
 	}
-	
-	
+
+	// TODO make this a parameter
+	private final double timeLimit = 1 * 60; // 1 minute is time limit for simulation
+
 	/**
 	 * Simulates the evacuation given the list of exits are added
 	 * to the environment.
 	 * @param accesses list of exits to be added to the environment
 	 */
 	public double simulate (List<Access> accesses) {
-		// TODO
-		// Complete this method with the simulation
-		// A suitable class or record can be created to return the outcome
-		// of the simulation, or separate methods can be created to obtain 
-		// different performance indicators of the simulator (number of people
-		// that got out, time of the last person, ...)
-
 		var domain = environment.getDomain(1);
 		var domainAccesses = domain.getAccesses();
 		domainAccesses.addAll(accesses);
@@ -165,7 +165,7 @@ public class ExitEvacuationProblem {
 		var cellularAutomatonParameters =
 				new CellularAutomatonParameters.Builder()
 						.scenario(scenario) // use this scenario
-						.timeLimit(2 * 60) // 2 minutes is time limit for simulation
+						.timeLimit(timeLimit) // 1 minute is time limit for simulation
 						.neighbourhood(MooreNeighbourhood::of) // use Moore's Neighbourhood for automaton
 						.pedestrianVelocity(1.3) // fastest pedestrians walk at 1.3 m/s
 						.build();
@@ -180,7 +180,7 @@ public class ExitEvacuationProblem {
 						.velocityPercent(random.nextDouble(0.3, 1.0))
 						.build();
 
-		var numberOfPedestrians = 600; // random.nextInt(150, 600);
+		var numberOfPedestrians = 1000; // random.nextInt(150, 600);
 		automaton.addPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
 
 		automaton.run();
@@ -191,9 +191,20 @@ public class ExitEvacuationProblem {
 		domainAccesses.addAll(fixedAccesses);
 
 		// TODO compute fitness
-		return automaton.computeStatistics().numberOfEvacuees();
+		return fitness(automaton);
 	}
-	
+
+	public double fitness(CellularAutomaton automaton) {
+		double f = automaton.numberOfNonEvacuees();
+		if (f > 0) {
+			var distances = automaton.distancesToClosestExit();
+			f += minimum(distances) / diameter + mean(distances) / Math.pow(diameter, 2);
+		} else {
+			var times = automaton.evacuationTimes();
+			f += maximum(times) / timeLimit + mean(times) / Math.pow(timeLimit, 2);
+		}
+		return f;
+	}
 	
 	@Override
 	public String toString() {
