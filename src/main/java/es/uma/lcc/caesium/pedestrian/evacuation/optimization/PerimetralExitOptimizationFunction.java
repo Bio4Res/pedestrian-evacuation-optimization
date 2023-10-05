@@ -77,12 +77,12 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 	 * @return a list of rectangles corresponding to segments of such exit.
 	 */
 	private List<Shape.Rectangle> locationToRectangles(double location) {
-		var exitHeight = 0.5;
+		var exitHeight = 0.1;
 		var remainingExitLength = exitWidth;
 		var loc = location;
 		List<Shape.Rectangle> rectangles = new LinkedList<>();
 		while(remainingExitLength > 0) {
-			while (loc > perimeterLength)
+			while (loc >= perimeterLength)
 				loc -= perimeterLength;
 			if (loc < width) {
 				// horizontal. bottom. left to right
@@ -109,7 +109,7 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 				// vertical. left. top to bottom
 				var top = height - (loc - (2 * width + height));
 				var rectangleHeight = Math.min(remainingExitLength, top);
-				rectangles.add(new Shape.Rectangle(0, top - rectangleHeight, exitWidth, rectangleHeight));
+				rectangles.add(new Shape.Rectangle(0, top - rectangleHeight, exitHeight, rectangleHeight));
 				loc += rectangleHeight;
 				remainingExitLength -= rectangleHeight;
 			}
