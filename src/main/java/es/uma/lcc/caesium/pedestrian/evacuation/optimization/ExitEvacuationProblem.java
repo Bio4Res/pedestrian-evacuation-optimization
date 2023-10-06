@@ -149,22 +149,35 @@ public class ExitEvacuationProblem {
 	 * Returns the height of the environment
 	 * @return the height of the environment
 	 */
-	public double geHeight() {
+	public double getHeight() {
 		return environment.getDomain(1).getHeight();
 	}
 
+
+	public double getDiameter() {
+		return diameter;
+	}
 
 	/**
 	 * Simulates the evacuation given the list of exits are added
 	 * to the environment.
 	 * @param accesses list of exits to be added to the environment
+	 * @return a summary of the simulation(s) performed
 	 */
-	public double simulate (List<Access> accesses) {
+	public SimulationSummary simulate (List<Access> accesses) {
 		var domain = environment.getDomain(1);
 		var domainAccesses = domain.getAccesses();
 		domainAccesses.addAll(accesses);
 
 		es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.statistics.Random.random.setSeed(simulationConf.getInt("seed"));
+		int numSimulations = simulationConf.getInt("numSimulations");
+		// simulation metrics
+		double nonEvacuees = 0.0;
+		double minDistance = 0.0;
+		double meanDistance = 0.0;
+		double maxTime = 0.0;
+		double meanTime = 0.0;
+		
 		// simulate
 
 		// TODO factories for neighborhood and floor field
@@ -196,25 +209,33 @@ public class ExitEvacuationProblem {
 		automaton.addPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
 
 		automaton.run();
-
+		// gather metrics
+		double f = automaton.numberOfNonEvacuees();
+		if (f>0) {
+			nonEvacuees += f;
+			var distances = automaton.distancesToClosestExit();
+			minDistance += minimum(distances);
+			meanDistance += mean(distances) * f;
+		}
+		else {
+			var times = automaton.evacuationTimes();
+			maxTime += minimum(times);
+			meanTime += mean(times);		
+		}
+		
 		domainAccesses.clear();
 		domainAccesses.addAll(fixedAccesses);
+		
+		// average results
+		meanDistance /= nonEvacuees;
+		nonEvacuees /= numSimulations;
+		minDistance /= numSimulations;
+		maxTime /= numSimulations;
+		meanTime /= numSimulations;
 
-		return fitness(automaton);
+		return new SimulationSummary(nonEvacuees, minDistance, meanDistance, maxTime, meanTime);
 	}
 
-	public double fitness(CellularAutomaton automaton) {
-		double timeLimit = simulationConf.getDouble("timeLimit");
-		double f = automaton.numberOfNonEvacuees();
-		if (f > 0) {
-			var distances = automaton.distancesToClosestExit();
-			f += minimum(distances) / diameter + mean(distances) / Math.pow(diameter, 2);
-		} else {
-			var times = automaton.evacuationTimes();
-			f += maximum(times) / timeLimit + mean(times) / Math.pow(timeLimit, 2);
-		}
-		return f;
-	}
 	
 	@Override
 	public String toString() {

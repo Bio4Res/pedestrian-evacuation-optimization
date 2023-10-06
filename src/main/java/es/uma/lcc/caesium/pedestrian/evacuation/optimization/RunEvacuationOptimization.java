@@ -48,10 +48,9 @@ public class RunEvacuationOptimization {
 	    int numExits = Integer.parseInt(args[2]);
 	    ExitEvacuationProblem eep = new ExitEvacuationProblem (environment, numExits);
 	    SimulationConfiguration simulationConf = SimulationConfiguration.fromFile(args[3]);
-	    eep.setSimulationConfiguration(simulationConf);
-	    System.out.println(eep);
-		myEA.setObjectiveFunction(new PerimetralExitOptimizationFunction(eep));
+		myEA.setObjectiveFunction(new PerimetralExitOptimizationFunction(eep, simulationConf));
 		myEA.getStatistics().setDiversityMeasure(new VarianceDiversity());
+	    System.out.println(eep);
 		
 		for (int i=0; i<numruns; i++) {
 			long seed = firstSeed + i;

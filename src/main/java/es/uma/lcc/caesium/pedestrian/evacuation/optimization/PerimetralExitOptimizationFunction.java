@@ -1,5 +1,6 @@
 package es.uma.lcc.caesium.pedestrian.evacuation.optimization;
 
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,6 +9,7 @@ import es.uma.lcc.caesium.ea.base.Genotype;
 import es.uma.lcc.caesium.ea.base.Individual;
 import es.uma.lcc.caesium.ea.fitness.ContinuousObjectiveFunction;
 import es.uma.lcc.caesium.ea.fitness.OptimizationSense;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.configuration.SimulationConfiguration;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Access;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Shape;
 
@@ -34,6 +36,10 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 	 */
 	private final double perimeterLength;
 	/**
+	 * diameter of the environment
+	 */
+	private final double diameter;
+	/**
 	 * Width of the environment
 	 */
 	private final double width;
@@ -45,18 +51,25 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 	 * the instance of the evacuation problem
 	 */
 	private final ExitEvacuationProblem eep;
+	/**
+	 * configuration of the simulation
+	 */
+	private SimulationConfiguration conf;
 	
 	/**
 	 * Basic constructor
 	 * @param eep the evacuation problem
 	 */
-	public PerimetralExitOptimizationFunction(ExitEvacuationProblem eep) {
+	public PerimetralExitOptimizationFunction(ExitEvacuationProblem eep, SimulationConfiguration conf) {
 		super(eep.getNumExits(), 0.0, 1.0);
+		this.conf = conf;
+		eep.setSimulationConfiguration(conf);
 		numExits = eep.getNumExits();
 		perimeterLength = eep.getPerimeterLength();
 		exitWidth = eep.getExitWidth();
 		width = eep.getWidth();
-		height = eep.geHeight();
+		height = eep.getHeight();
+		diameter = eep.getDiameter();
 		this.eep = eep;
 	}
 	
@@ -151,6 +164,23 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 			}
 		}
 		// simulate
-		return eep.simulate(exits);
+		SimulationSummary summary = eep.simulate(exits);
+		return fitness (summary);
+	}
+	
+	/**
+	 * Computes fitness given the results of the simulation(s)
+	 * @param summary summary of the simulation results
+	 * @return a numeric value (to be minimized) representing the goodness of the simulation results.
+	 */
+	public double fitness(SimulationSummary summary) {
+		double timeLimit = conf.getDouble("timeLimit");
+		double f = summary.nonEvacuees();
+		if (f > 0) {
+			f += summary.minDistance() / diameter + summary.meanDistance() / Math.pow(diameter, 2);
+		} else {
+			f += summary.maxTime() / timeLimit + summary.meanTime() / Math.pow(timeLimit, 2);
+		}
+		return f;
 	}
 }

@@ -62,6 +62,10 @@ public class SimulationConfiguration {
 		if (json.containsKey("seed")) 
 			seed = JsonUtil.getInt(json, "seed");
 		conf.parameters.put("seed", Integer.toString(seed));
+		int numSimulations = 1;
+		if (json.containsKey("numSimulations")) 
+			numSimulations = JsonUtil.getInt(json, "numSimulations");
+		conf.parameters.put("numSimulations", Integer.toString(numSimulations));
 		
 		JsonObject simulator = (JsonObject)json.get("simulator");
 		conf.parameters.put("timeLimit", Double.toString(JsonUtil.getDouble(simulator,"timeLimit")));
@@ -102,8 +106,8 @@ public class SimulationConfiguration {
 	/**
 	 * @param file the file with json contents to be parsed.
 	 * @return the simulation configuration from the provided file.
-	 * @throws FileNotFoundException
-	 * @throws JsonException
+	 * @throws FileNotFoundException if file is not found
+	 * @throws JsonException if file does not contain a valid json object
 	 */
 	public static SimulationConfiguration fromFile(File file) throws FileNotFoundException, JsonException {
 		FileReader reader = new FileReader(file);
@@ -114,8 +118,8 @@ public class SimulationConfiguration {
 	/**
 	 * @param filename the name of the file with json contents to be parsed.
 	 * @return the simulation configuration from the provided file.
-	 * @throws FileNotFoundException
-	 * @throws JsonException
+	 * @throws FileNotFoundException if file is not found
+	 * @throws JsonException if file does not contain a valid json object
 	 */
 	public static SimulationConfiguration fromFile(String filename) throws FileNotFoundException, JsonException {
 		return fromFile(new File(filename));
@@ -124,10 +128,11 @@ public class SimulationConfiguration {
 	@Override
 	public String toString() {
 		String str = "Simulation configuration\n------------------------" 
-				+ "\nseed:           " + getInt("seed")
-				+ "\ntime limit:     " + getDouble("timeLimit");
+				+ "\nseed:                  " + getInt("seed")
+				+ "\nnumber of simulations: " + getInt("numSimulations")
+				+ "\ntime limit:            " + getDouble("timeLimit");
 		String type = getString("simulatorType");
-		str += "\nsimulator type: " + type;
+		str += "\nsimulator type:        " + type;
 		switch (type) {
 		case "CA" :
 			str += "\ncell scale:     " + getInt("cellularAutomatonParameters/cellScale")
