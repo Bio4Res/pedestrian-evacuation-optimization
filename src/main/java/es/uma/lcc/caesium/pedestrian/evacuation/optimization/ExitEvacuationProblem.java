@@ -15,8 +15,8 @@ import es.uma.lcc.caesium.pedestrian.evacuation.simulator.configuration.Simulati
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Access;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Domain;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Environment;
-import static es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.statistics.Descriptive.*;
-import static es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.statistics.Random.random;
+import static es.uma.lcc.caesium.statistics.Descriptive.*;
+import static es.uma.lcc.caesium.statistics.Random.random;
 
 /**
  * Evacuation problem: given an environment, find the location of a number
@@ -169,7 +169,7 @@ public class ExitEvacuationProblem {
 		var domainAccesses = domain.getAccesses();
 		domainAccesses.addAll(accesses);
 
-		es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.statistics.Random.random.setSeed(simulationConf.getInt("seed"));
+		es.uma.lcc.caesium.statistics.Random.random.setSeed(simulationConf.getInt("seed"));
 		int numSimulations = simulationConf.getInt("numSimulations");
 		// simulation metrics
 		double nonEvacuees = 0.0;

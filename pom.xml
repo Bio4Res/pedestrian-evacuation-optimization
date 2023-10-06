@@ -25,6 +25,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>es.uma.lcc.caesium</groupId>
+      <artifactId>statistics</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
     	<groupId>es.uma.lcc.caesium</groupId>
     	<artifactId>ea</artifactId>
     	<version>1.0</version>
