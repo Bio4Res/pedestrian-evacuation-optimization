@@ -12,6 +12,7 @@ import com.github.cliftonlabs.json_simple.Jsoner;
 import es.uma.lcc.caesium.ea.base.EvolutionaryAlgorithm;
 import es.uma.lcc.caesium.ea.config.EAConfiguration;
 import es.uma.lcc.caesium.ea.statistics.VarianceDiversity;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.configuration.SimulationConfiguration;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Environment;
 
 /**
@@ -29,10 +30,11 @@ public class RunEvacuationOptimization {
 	 */
 	public static void main(String[] args) throws FileNotFoundException, JsonException {
 		EAConfiguration conf;
-		if (args.length < 3) {
-			System.out.println ("Required parameters: <ea-configuration-file> <environment-configuration-file> {<evacuation-configuration>}");
+		if (args.length < 4) {
+			System.out.println ("Required parameters: <ea-configuration-file> <environment-configuration-file> <num-exits> <simulation-configuration>");
 			System.exit(1);
 		}
+		
 		// Configure the EA
 		FileReader reader = new FileReader(args[0]);
 		conf = new EAConfiguration((JsonObject) Jsoner.deserialize(reader));
@@ -40,17 +42,20 @@ public class RunEvacuationOptimization {
 		long firstSeed = conf.getSeed();
 		System.out.println(conf);
 		EvolutionaryAlgorithm myEA = new EvolutionaryAlgorithm(conf);
+		
 		// Configure the problem
 	    Environment environment = Environment.fromFile(args[1]);
 	    int numExits = Integer.parseInt(args[2]);
 	    ExitEvacuationProblem eep = new ExitEvacuationProblem (environment, numExits);
+	    SimulationConfiguration simulationConf = SimulationConfiguration.fromFile(args[3]);
+	    eep.setSimulationConfiguration(simulationConf);
 	    System.out.println(eep);
 		myEA.setObjectiveFunction(new PerimetralExitOptimizationFunction(eep));
 		myEA.getStatistics().setDiversityMeasure(new VarianceDiversity());
+		
 		for (int i=0; i<numruns; i++) {
 			long seed = firstSeed + i;
 			// set seed for running simulator and EA
-			es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.statistics.Random.random.setSeed(seed);
 			myEA.run(seed); 
 			System.out.println ("Run " + i + ": " + 
 								String.format(Locale.US, "%.2f", myEA.getStatistics().getTime(i)) + "s\t" +

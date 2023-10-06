@@ -11,6 +11,7 @@ import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.aut
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.neighbourhood.MooreNeighbourhood;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.pedestrian.PedestrianParameters;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.scenario.Scenario;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.configuration.SimulationConfiguration;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Access;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Domain;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Environment;
@@ -57,12 +58,11 @@ public class ExitEvacuationProblem {
 	 */
 	private final ArrayList<Access> fixedAccesses;
 	
-	// TODO
-	// There must be some member fields to account for the simulator and maybe
-	// the simulator parameters
 
-	// TODO make this a parameter
-	private final double timeLimit = 1 * 60; // 1 minute is time limit for simulation
+	/**
+	 * the parameters used by the simulator
+	 */
+	private SimulationConfiguration simulationConf = null;
 
 
 	/**
@@ -91,6 +91,15 @@ public class ExitEvacuationProblem {
 		this(env, numExits);
 		setExitWidth(width);
 	}
+	
+	/**
+	 * Sets the parameters of the simulation (simulator parameters + crowd parameters)
+	 * @param conf configuration of the simulation
+	 */
+	public void setSimulationConfiguration (SimulationConfiguration conf) {
+		simulationConf = conf;
+	}
+	
 	
 	/**
 	 * Returns the number of exits
@@ -155,10 +164,11 @@ public class ExitEvacuationProblem {
 		var domainAccesses = domain.getAccesses();
 		domainAccesses.addAll(accesses);
 
+		es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.statistics.Random.random.setSeed(simulationConf.getInt("seed"));
 		// simulate
 
-		// TODO set simulator parameters properly
-
+		// TODO factories for neighborhood and floor field
+		
 		Scenario scenario = new Scenario.FromDomainBuilder(domain)
 				.cellDimension(domain.getWidth() / 110)
 				.floorField(DijkstraStaticFloorFieldWithMooreNeighbourhood::of)
@@ -167,9 +177,9 @@ public class ExitEvacuationProblem {
 		var cellularAutomatonParameters =
 				new CellularAutomatonParameters.Builder()
 						.scenario(scenario) // use this scenario
-						.timeLimit(timeLimit) // 1 minute is time limit for simulation
-						.neighbourhood(MooreNeighbourhood::of) // use Moore's Neighbourhood for automaton
-						.pedestrianVelocity(1.3) // fastest pedestrians walk at 1.3 m/s
+						.timeLimit(simulationConf.getDouble("timeLimit")) // time limit for simulation (in seconds)
+						.neighbourhood(MooreNeighbourhood::of) // use Moore's Neighborhood for automaton
+						.pedestrianVelocity(simulationConf.getDouble("crowd/pedestrianReferenceVelocity")) // fastest pedestrian speed
 						.build();
 
 		var automaton = new CellularAutomaton(cellularAutomatonParameters);
@@ -177,12 +187,12 @@ public class ExitEvacuationProblem {
 		// place pedestrians
 		Supplier<PedestrianParameters> pedestrianParametersSupplier = () ->
 				new PedestrianParameters.Builder()
-						.fieldAttractionBias(random.nextDouble(0.65, 2.0))
-						.crowdRepulsion(random.nextDouble(1.00, 1.50))
-						.velocityPercent(random.nextDouble(0.3, 1.0))
+						.fieldAttractionBias(random.nextDouble(simulationConf.getDouble("crowd/attractionBias/min"), simulationConf.getDouble("crowd/attractionBias/max")))
+						.crowdRepulsion(random.nextDouble(simulationConf.getDouble("crowd/crowdRepulsion/min"), simulationConf.getDouble("crowd/crowdRepulsion/max")))
+						.velocityPercent(random.nextDouble(simulationConf.getDouble("crowd/velocityFactor/min"), simulationConf.getDouble("crowd/velocityFactor/max")))
 						.build();
 
-		var numberOfPedestrians = 1000; // random.nextInt(150, 600);
+		var numberOfPedestrians = random.nextInt(simulationConf.getInt("crowd/numPedestrians/min"), simulationConf.getInt("crowd/numPedestrians/max") + 1);
 		automaton.addPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
 
 		automaton.run();
@@ -194,6 +204,7 @@ public class ExitEvacuationProblem {
 	}
 
 	public double fitness(CellularAutomaton automaton) {
+		double timeLimit = simulationConf.getDouble("timeLimit");
 		double f = automaton.numberOfNonEvacuees();
 		if (f > 0) {
 			var distances = automaton.distancesToClosestExit();
@@ -210,6 +221,8 @@ public class ExitEvacuationProblem {
 		return "Evacuation Problem\n------------------"
 				+ "\nEnvironment:     " + environment.jsonPrettyPrinted()
 				+ "\nNumber of exits: " + numExits
-				+ "\nExit width:      " + exitWidth;
+				+ "\nExit width:      " + exitWidth 
+				+ ((simulationConf == null) ? "\nSimulation configuration: TBD" : ("\n" + simulationConf)) 
+				+ "\n------------------";
 	}
 }
