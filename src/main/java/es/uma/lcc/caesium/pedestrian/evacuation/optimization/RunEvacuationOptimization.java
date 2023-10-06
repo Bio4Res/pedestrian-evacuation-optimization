@@ -42,6 +42,7 @@ public class RunEvacuationOptimization {
 		long firstSeed = conf.getSeed();
 		System.out.println(conf);
 		EvolutionaryAlgorithm myEA = new EvolutionaryAlgorithm(conf);
+		myEA.setVerbosityLevel(1);
 		
 		// Configure the problem
 	    Environment environment = Environment.fromFile(args[1]);

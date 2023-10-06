@@ -219,7 +219,7 @@ public class ExitEvacuationProblem {
 		}
 		else {
 			var times = automaton.evacuationTimes();
-			maxTime += minimum(times);
+			maxTime += maximum(times);
 			meanTime += mean(times);		
 		}
 		

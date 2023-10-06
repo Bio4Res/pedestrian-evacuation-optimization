@@ -1,6 +1,6 @@
 {
     "simulator": {
-        "timeLimit": 60,
+        "timeLimit": 180,
         "simulatorType" : "CA",
         "cellularAutomatonParameters": {
             "cellScale": 110,
