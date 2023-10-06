@@ -127,25 +127,25 @@ public class SimulationConfiguration {
 	
 	@Override
 	public String toString() {
-		String str = "Simulation configuration\n------------------------" 
-				+ "\nseed:                  " + getInt("seed")
-				+ "\nnumber of simulations: " + getInt("numSimulations")
-				+ "\ntime limit:            " + getDouble("timeLimit");
+		String str = "------------------------------------------------\nSimulation configuration\n------------------------------------------------" 
+				+ "\nseed:                          " + getInt("seed")
+				+ "\nnumber of simulations:         " + getInt("numSimulations")
+				+ "\ntime limit:                    " + getDouble("timeLimit");
 		String type = getString("simulatorType");
-		str += "\nsimulator type:        " + type;
+		str += "\nsimulator type:                " + type;
 		switch (type) {
 		case "CA" :
-			str += "\ncell scale:     " + getInt("cellularAutomatonParameters/cellScale")
-			     + "\nneighborhood:   " + getString("cellularAutomatonParameters/neighborhood")
-			     + "\nfloor field:    " + getString("cellularAutomatonParameters/floorField");
+			str += "\ncell scale:                    " + getInt("cellularAutomatonParameters/cellScale")
+			     + "\nneighborhood:                  " + getString("cellularAutomatonParameters/neighborhood")
+			     + "\nfloor field:                   " + getString("cellularAutomatonParameters/floorField");
 			break;
 		}
 		str+= "\npedestrian reference velocity: " + getDouble("crowd/pedestrianReferenceVelocity")
 		    + "\nnumber of pedestrians:         [" + getInt("crowd/numPedestrians/min")    + ", " +  getInt("crowd/numPedestrians/max")   + "]"
-		    + "\nattracttion bias:              [" + getDouble("crowd/attractionBias/min") + ", " + getDouble("crowd/attractionBias/max") + "]"
+		    + "\nattraction bias:               [" + getDouble("crowd/attractionBias/min") + ", " + getDouble("crowd/attractionBias/max") + "]"
 		    + "\ncrowd repulsion:               [" + getDouble("crowd/crowdRepulsion/min") + ", " + getDouble("crowd/crowdRepulsion/max") + "]"
 		    + "\nvelocity factor:               [" + getDouble("crowd/velocityFactor/min") + ", " + getDouble("crowd/velocityFactor/max") + "]";
-
+		str += "\n------------------------------------------------";
 		return str;
 	}
 	
