@@ -239,11 +239,11 @@ public class ExitEvacuationProblem {
 	
 	@Override
 	public String toString() {
-		return "Evacuation Problem\n------------------"
+		return "================================================\nEvacuation Problem\n================================================"
 				+ "\nEnvironment:     " + environment.jsonPrettyPrinted()
 				+ "\nNumber of exits: " + numExits
 				+ "\nExit width:      " + exitWidth 
 				+ ((simulationConf == null) ? "\nSimulation configuration: TBD" : ("\n" + simulationConf)) 
-				+ "\n------------------";
+				+ "\n================================================";
 	}
 }
