@@ -11,7 +11,6 @@ import com.github.cliftonlabs.json_simple.Jsoner;
 
 import es.uma.lcc.caesium.ea.base.EvolutionaryAlgorithm;
 import es.uma.lcc.caesium.ea.config.EAConfiguration;
-import es.uma.lcc.caesium.ea.statistics.VarianceDiversity;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.configuration.SimulationConfiguration;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Environment;
 
@@ -50,7 +49,7 @@ public class RunEvacuationOptimization {
 	    ExitEvacuationProblem eep = new ExitEvacuationProblem (environment, numExits);
 	    SimulationConfiguration simulationConf = SimulationConfiguration.fromFile(args[3]);
 		myEA.setObjectiveFunction(new PerimetralExitOptimizationFunction(eep, simulationConf));
-		myEA.getStatistics().setDiversityMeasure(new VarianceDiversity());
+		myEA.getStatistics().setDiversityMeasure(new CircularSetDiversity(1.0));
 	    System.out.println(eep);
 		
 		for (int i=0; i<numruns; i++) {
