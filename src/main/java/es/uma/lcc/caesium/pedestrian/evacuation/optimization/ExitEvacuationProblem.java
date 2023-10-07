@@ -57,8 +57,6 @@ public class ExitEvacuationProblem {
 	 * potential exits during simulation.
 	 */
 	private final ArrayList<Access> fixedAccesses;
-	
-
 	/**
 	 * the parameters used by the simulator
 	 */
@@ -101,6 +99,14 @@ public class ExitEvacuationProblem {
 	}
 	
 	
+	/**
+	 * Returns the environment
+	 * @return the environment
+	 */
+	public Environment getEnvironment() {
+		return environment;
+	}
+
 	/**
 	 * Returns the number of exits
 	 * @return the number of exits
@@ -236,6 +242,22 @@ public class ExitEvacuationProblem {
 		return new SimulationSummary(nonEvacuees, minDistance, meanDistance, maxTime, meanTime);
 	}
 
+	
+	/**
+	 * Computes fitness given the results of the simulation(s)
+	 * @param summary summary of the simulation results
+	 * @return a numeric value (to be minimized) representing the goodness of the simulation results.
+	 */
+	public double fitness(SimulationSummary summary) {
+		double timeLimit = simulationConf.getDouble("timeLimit");
+		double f = summary.nonEvacuees();
+		if (f > 0) {
+			f += summary.minDistance() / diameter + summary.meanDistance() / Math.pow(diameter, 2);
+		} else {
+			f += summary.maxTime() / timeLimit + summary.meanTime() / Math.pow(timeLimit, 2);
+		}
+		return f;
+	}
 	
 	@Override
 	public String toString() {

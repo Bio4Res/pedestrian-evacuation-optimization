@@ -48,7 +48,8 @@ public class RunEvacuationOptimization {
 	    int numExits = Integer.parseInt(args[2]);
 	    ExitEvacuationProblem eep = new ExitEvacuationProblem (environment, numExits);
 	    SimulationConfiguration simulationConf = SimulationConfiguration.fromFile(args[3]);
-		myEA.setObjectiveFunction(new PerimetralExitOptimizationFunction(eep, simulationConf));
+	    eep.setSimulationConfiguration(simulationConf);
+		myEA.setObjectiveFunction(new PerimetralExitOptimizationFunction(eep));
 		myEA.getStatistics().setDiversityMeasure(new CircularSetDiversity(1.0));
 	    System.out.println(eep);
 		
