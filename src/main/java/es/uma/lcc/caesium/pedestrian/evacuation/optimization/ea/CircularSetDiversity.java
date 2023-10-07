@@ -1,4 +1,4 @@
-package es.uma.lcc.caesium.pedestrian.evacuation.optimization;
+package es.uma.lcc.caesium.pedestrian.evacuation.optimization.ea;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package es.uma.lcc.caesium.pedestrian.evacuation.optimization;
+package es.uma.lcc.caesium.pedestrian.evacuation.optimization.ea;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -11,6 +11,7 @@ import com.github.cliftonlabs.json_simple.Jsoner;
 
 import es.uma.lcc.caesium.ea.base.EvolutionaryAlgorithm;
 import es.uma.lcc.caesium.ea.config.EAConfiguration;
+import es.uma.lcc.caesium.pedestrian.evacuation.optimization.ExitEvacuationProblem;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.configuration.SimulationConfiguration;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Environment;
 

@@ -1,4 +1,4 @@
-package es.uma.lcc.caesium.pedestrian.evacuation.optimization;
+package es.uma.lcc.caesium.pedestrian.evacuation.optimization.ea;
 
 
 import java.util.ArrayList;
@@ -8,6 +8,9 @@ import es.uma.lcc.caesium.ea.base.Genotype;
 import es.uma.lcc.caesium.ea.base.Individual;
 import es.uma.lcc.caesium.ea.fitness.ContinuousObjectiveFunction;
 import es.uma.lcc.caesium.ea.fitness.OptimizationSense;
+import es.uma.lcc.caesium.pedestrian.evacuation.optimization.Double2AccessDecoder;
+import es.uma.lcc.caesium.pedestrian.evacuation.optimization.ExitEvacuationProblem;
+import es.uma.lcc.caesium.pedestrian.evacuation.optimization.SimulationSummary;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Access;
 
 

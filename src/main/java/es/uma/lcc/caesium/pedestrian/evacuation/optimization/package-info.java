@@ -1,5 +1,5 @@
 /**
- * Evacuation optimization using EAs
+ * Evacuation optimization using heuristic methods
  * @author ccottap, ppgllrd
  * @version 1.0
  */
