@@ -150,7 +150,6 @@ public class GreedyPerimetralExitPlacement {
 	 * @return the list of encoded locations
 	 */
 	public List<Double> getExits (int numExits) {
-		setVerbosityLevel(1);
 		List<Double> locations = new ArrayList<Double>(numExits);
 		List<Access> acc = new ArrayList<Access>(numExits);
 		for (int i=0; i<numExits; i++) {
