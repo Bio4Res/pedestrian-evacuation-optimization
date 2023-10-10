@@ -3,12 +3,18 @@ package es.uma.lcc.caesium.pedestrian.evacuation.optimization;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.CellularAutomaton;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.CellularAutomatonParameters;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.floorField.DijkstraStaticFloorFieldWithMooreNeighbourhood;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.floorField.DijkstraStaticFloorFieldWithVonNewmanNeighbourhood;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.floorField.FloorField;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.floorField.ManhattanStaticFloorField;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.neighbourhood.MooreNeighbourhood;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.neighbourhood.Neighbourhood;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.neighbourhood.VonNeumannNeighbourhood;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.pedestrian.PedestrianParameters;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.scenario.Scenario;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.configuration.SimulationConfiguration;
@@ -187,21 +193,35 @@ public class ExitEvacuationProblem {
 		
 		// simulate
 
-		// TODO factories for neighborhood and floor field
+		Function<Scenario, FloorField> floorField =
+				switch (simulationConf.getString("cellularAutomatonParameters/floorField")) {
+					case "DijkstraStaticMoore" -> DijkstraStaticFloorFieldWithMooreNeighbourhood::of;
+					case "DijkstraStaticVonNeumann" -> DijkstraStaticFloorFieldWithVonNewmanNeighbourhood::of;
+					case "ManhattanStatic" -> ManhattanStaticFloorField::of;
+					default -> throw new IllegalArgumentException();
+				};
 
 		// create common scenario for all simulations
 		Scenario scenario = new Scenario.FromDomainBuilder(domain)
-				.cellDimension(domain.getWidth() / 110)
-				.floorField(DijkstraStaticFloorFieldWithMooreNeighbourhood::of)
+				.cellDimension(simulationConf.getInt("cellularAutomatonParameters/cellDimension"))
+				.floorField(floorField)
 				.build();
+
+		Function<Scenario, Neighbourhood> neighbourhood =
+		switch (simulationConf.getString("cellularAutomatonParameters/neighborhood")) {
+			case "Moore" -> MooreNeighbourhood::of;
+			case "VonNeumann" -> VonNeumannNeighbourhood::of;
+			default -> throw new IllegalArgumentException();
+		};
 
 		// create automaton for all simulations
 		var cellularAutomatonParameters =
 				new CellularAutomatonParameters.Builder()
 						.scenario(scenario) // use this scenario
 						.timeLimit(simulationConf.getDouble("timeLimit")) // time limit for simulation (in seconds)
-						.neighbourhood(MooreNeighbourhood::of) // use Moore's Neighborhood for automaton
-						.pedestrianVelocity(simulationConf.getDouble("crowd/pedestrianReferenceVelocity")) // fastest pedestrian speed
+						.neighbourhood(neighbourhood) // use this neighborhood for automaton
+						.pedestrianReferenceVelocity(simulationConf.getDouble("crowd/pedestrianReferenceVelocity"))
+								// fastest pedestrian speed
 						.build();
 
 		var automaton = new CellularAutomaton(cellularAutomatonParameters);
