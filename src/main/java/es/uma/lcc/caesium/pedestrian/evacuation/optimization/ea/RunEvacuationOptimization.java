@@ -31,7 +31,9 @@ public class RunEvacuationOptimization {
 	public static void main(String[] args) throws FileNotFoundException, JsonException {
 		EAConfiguration conf;
 		if (args.length < 4) {
-			System.out.println ("Required parameters: <ea-configuration-file> <environment-configuration-file> <num-exits> <simulation-configuration>");
+			System.out.println ("Required parameters: <ea-configuration-file> <environment-name> <num-exits> <simulation-configuration>");
+			System.out.println ("\nNote that the environment configuration file will be sought as base-<environment-name>.json,");
+			System.out.println ("and the statistics will be dumped to a file name stats-<environment-name>.json");
 			System.exit(1);
 		}
 		
@@ -42,10 +44,10 @@ public class RunEvacuationOptimization {
 		long firstSeed = conf.getSeed();
 		System.out.println(conf);
 		EvolutionaryAlgorithm myEA = new EvolutionaryAlgorithm(conf);
-		myEA.setVerbosityLevel(0);
+		myEA.setVerbosityLevel(1);
 		
 		// Configure the problem
-	    Environment environment = Environment.fromFile(args[1]);
+	    Environment environment = Environment.fromFile("base-" + args[1] + ".json");
 	    int numExits = Integer.parseInt(args[2]);
 	    ExitEvacuationProblem eep = new ExitEvacuationProblem (environment, numExits);
 	    SimulationConfiguration simulationConf = SimulationConfiguration.fromFile(args[3]);
@@ -61,7 +63,7 @@ public class RunEvacuationOptimization {
 								String.format(Locale.US, "%.2f", myEA.getStatistics().getTime(i)) + "s\t" +
 								myEA.getStatistics().getBest(i).getFitness());
 		}
-		PrintWriter file = new PrintWriter("stats.json");
+		PrintWriter file = new PrintWriter("stats-" + args[1] + ".json");
 		file.print(myEA.getStatistics().toJSON().toJson());
 		file.close();
 	}

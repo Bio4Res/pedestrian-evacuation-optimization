@@ -74,6 +74,7 @@ public class RunGreedyExitPlacement {
 	    decoder = new Double2AccessDecoder(eep);
     
 	    GreedyPerimetralExitPlacement gpep = new GreedyPerimetralExitPlacement(eep);
+	    gpep.setVerbosityLevel(0);
 	    // this is the equivalent number of simulations required to compute a solution
 	    int cost = (int)(Math.ceil(eep.getPerimeterLength()/eep.getExitWidth())*numExits);
 	    
@@ -110,25 +111,6 @@ public class RunGreedyExitPlacement {
 	    }
 	    stats.close();
 	    sols.close();
-	    
-	    
-//	    List<Double> locations = gpep.getExits(numExits);
-//	    System.out.println("Solution: " + locations);
-//	    for (int i=0; i<numExits; i++) {
-//	    	double pos = locations.get(i) * (eep.getPerimeterLength() - eep.getExitWidth());
-//	    	System.out.print("[" + pos + ", " + (pos + eep.getExitWidth()) + "]");
-//	    }
-//	    System.out.println();
-//	    
-//	    List<Access> acc = new ArrayList<Access>(numExits);
-//	    int id = 0;
-//	    for (double loc : locations) {
-//	    	acc.addAll(decoder.decodeAccess(loc* (eep.getPerimeterLength() - eep.getExitWidth()), id++, acc.size()));
-//	    }
-//	    System.out.println("Accesses: " + acc);
-//	    System.out.println("Fitness : " + eep.fitness(eep.simulate(acc)));
-//
-//	    System.out.println("Cost    : " + cost + " simulations");
 	
 	}
 
