@@ -175,7 +175,6 @@ public class ExitEvacuationProblem {
 		var domainAccesses = domain.getAccesses();
 		domainAccesses.addAll(accesses);
 
-		es.uma.lcc.caesium.statistics.Random.random.setSeed(simulationConf.getInt("seed"));
 		int numSimulations = simulationConf.getInt("numSimulations");
 		// simulation metrics
 		double nonEvacuees = 0.0;
@@ -187,12 +186,14 @@ public class ExitEvacuationProblem {
 		// simulate
 
 		// TODO factories for neighborhood and floor field
-		
+
+		// create common scenario for all simulations
 		Scenario scenario = new Scenario.FromDomainBuilder(domain)
 				.cellDimension(domain.getWidth() / 110)
 				.floorField(DijkstraStaticFloorFieldWithMooreNeighbourhood::of)
 				.build();
 
+		// create automaton for all simulations
 		var cellularAutomatonParameters =
 				new CellularAutomatonParameters.Builder()
 						.scenario(scenario) // use this scenario
@@ -203,36 +204,43 @@ public class ExitEvacuationProblem {
 
 		var automaton = new CellularAutomaton(cellularAutomatonParameters);
 
-		// place pedestrians
-		Supplier<PedestrianParameters> pedestrianParametersSupplier = () ->
-				new PedestrianParameters.Builder()
-						.fieldAttractionBias(random.nextDouble(simulationConf.getDouble("crowd/attractionBias/min"), simulationConf.getDouble("crowd/attractionBias/max")))
-						.crowdRepulsion(random.nextDouble(simulationConf.getDouble("crowd/crowdRepulsion/min"), simulationConf.getDouble("crowd/crowdRepulsion/max")))
-						.velocityPercent(random.nextDouble(simulationConf.getDouble("crowd/velocityFactor/min"), simulationConf.getDouble("crowd/velocityFactor/max")))
-						.build();
+		// run numSimulations independent simulations
+		for(int i = 0; i < numSimulations; i++) {
+			// reset automaton for this simulation
+			automaton.reset();
 
-		var numberOfPedestrians = random.nextInt(simulationConf.getInt("crowd/numPedestrians/min"), simulationConf.getInt("crowd/numPedestrians/max") + 1);
-		automaton.addPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
+			// place pedestrians for this simulation
+			Supplier<PedestrianParameters> pedestrianParametersSupplier = () ->
+					new PedestrianParameters.Builder()
+							.fieldAttractionBias(random.nextDouble(simulationConf.getDouble("crowd/attractionBias/min"), simulationConf.getDouble("crowd/attractionBias/max")))
+							.crowdRepulsion(random.nextDouble(simulationConf.getDouble("crowd/crowdRepulsion/min"), simulationConf.getDouble("crowd/crowdRepulsion/max")))
+							.velocityPercent(random.nextDouble(simulationConf.getDouble("crowd/velocityFactor/min"), simulationConf.getDouble("crowd/velocityFactor/max")))
+							.build();
 
-		automaton.run();
-		// gather metrics
-		double f = automaton.numberOfNonEvacuees();
-		if (f>0) {
-			nonEvacuees += f;
-			var distances = automaton.distancesToClosestExit();
-			minDistance += minimum(distances);
-			meanDistance += mean(distances) * f;
+			var numberOfPedestrians = random.nextInt(simulationConf.getInt("crowd/numPedestrians/min"), simulationConf.getInt("crowd/numPedestrians/max") + 1);
+			automaton.addPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
+
+			// run the simulation
+			automaton.run();
+
+			// gather metrics after this simulation
+			double f = automaton.numberOfNonEvacuees();
+			if (f > 0) {
+				nonEvacuees += f;
+				var distances = automaton.distancesToClosestExit();
+				minDistance += minimum(distances);
+				meanDistance += mean(distances) * f;
+			} else {
+				var times = automaton.evacuationTimes();
+				maxTime += maximum(times);
+				meanTime += mean(times);
+			}
 		}
-		else {
-			var times = automaton.evacuationTimes();
-			maxTime += maximum(times);
-			meanTime += mean(times);		
-		}
-		
+
 		domainAccesses.clear();
 		domainAccesses.addAll(fixedAccesses);
 		
-		// average results
+		// average results after all simulations
 		meanDistance /= nonEvacuees;
 		nonEvacuees /= numSimulations;
 		minDistance /= numSimulations;
