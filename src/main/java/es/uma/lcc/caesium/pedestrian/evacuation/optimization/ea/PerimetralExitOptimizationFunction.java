@@ -73,7 +73,7 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 		Genotype g = ind.getGenome();
 		var id = 0;
 		for (int exit=0; exit<numExits; exit++) {
-			double location = ((double)g.getGene(exit))*(perimeterLength-exitWidth);
+			double location = ((double)g.getGene(exit))*perimeterLength;
 			exits.addAll(decoder.decodeAccess(location, exit, id));
 			id = exits.size();
 		}
