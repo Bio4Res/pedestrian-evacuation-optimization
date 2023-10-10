@@ -58,7 +58,6 @@ public class RunEvacuationOptimization {
 		
 		for (int i=0; i<numruns; i++) {
 			long seed = firstSeed + i;
-			es.uma.lcc.caesium.statistics.Random.random.setSeed(seed);
 			myEA.run(seed);
 			System.out.println ("Run " + i + ": " + 
 								String.format(Locale.US, "%.2f", myEA.getStatistics().getTime(i)) + "s\t" +

@@ -182,6 +182,8 @@ public class ExitEvacuationProblem {
 		double meanDistance = 0.0;
 		double maxTime = 0.0;
 		double meanTime = 0.0;
+		double bestFitness = Double.NEGATIVE_INFINITY;
+
 		
 		// simulate
 
@@ -203,7 +205,8 @@ public class ExitEvacuationProblem {
 						.build();
 
 		var automaton = new CellularAutomaton(cellularAutomatonParameters);
-
+		// set a seed dependent on the solution for reproducibility
+		es.uma.lcc.caesium.statistics.Random.random.setSeed(accesses.hashCode());
 		// run numSimulations independent simulations
 		for(int i = 0; i < numSimulations; i++) {
 			// reset automaton for this simulation
@@ -225,27 +228,50 @@ public class ExitEvacuationProblem {
 
 			// gather metrics after this simulation
 			double f = automaton.numberOfNonEvacuees();
+			double curMinDist = 0.0;
+			double curMeanDist = 0.0;
+			double curMaxTime = 0.0;
+			double curMeanTime = 0.0;
 			if (f > 0) {
-				nonEvacuees += f;
 				var distances = automaton.distancesToClosestExit();
-				minDistance += minimum(distances);
-				meanDistance += mean(distances) * f;
-			} else {
-				var times = automaton.evacuationTimes();
-				maxTime += maximum(times);
-				meanTime += mean(times);
+				curMinDist = minimum(distances);
+				curMeanDist = mean(distances) * f;
 			}
+			else {
+				var times = automaton.evacuationTimes();
+				curMaxTime = maximum(times);
+				curMeanTime = mean(times);
+			}
+			double curFitness = fitness (new SimulationSummary(f, curMinDist, curMeanDist, curMaxTime, curMeanTime));
+			if (curFitness > bestFitness) { // the worst-case is kept
+				nonEvacuees = f;
+				minDistance = curMinDist;
+				meanDistance = curMeanDist;
+				maxTime = curMaxTime;
+				meanTime = curMeanTime;
+			}
+			
+//			if (f > 0) {
+//				nonEvacuees += f;
+//				var distances = automaton.distancesToClosestExit();
+//				minDistance += minimum(distances);
+//				meanDistance += mean(distances) * f;
+//			} else {
+//				var times = automaton.evacuationTimes();
+//				maxTime += maximum(times);
+//				meanTime += mean(times);
+//			}
 		}
 
 		domainAccesses.clear();
 		domainAccesses.addAll(fixedAccesses);
 		
 		// average results after all simulations
-		meanDistance /= nonEvacuees;
-		nonEvacuees /= numSimulations;
-		minDistance /= numSimulations;
-		maxTime /= numSimulations;
-		meanTime /= numSimulations;
+//		meanDistance /= nonEvacuees;
+//		nonEvacuees /= numSimulations;
+//		minDistance /= numSimulations;
+//		maxTime /= numSimulations;
+//		meanTime /= numSimulations;
 
 		return new SimulationSummary(nonEvacuees, minDistance, meanDistance, maxTime, meanTime);
 	}
