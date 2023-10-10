@@ -182,7 +182,7 @@ public class ExitEvacuationProblem {
 		double meanDistance = 0.0;
 		double maxTime = 0.0;
 		double meanTime = 0.0;
-		double bestFitness = Double.NEGATIVE_INFINITY;
+		double worseFitness = Double.NEGATIVE_INFINITY;
 
 		
 		// simulate
@@ -243,12 +243,13 @@ public class ExitEvacuationProblem {
 				curMeanTime = mean(times);
 			}
 			double curFitness = fitness (new SimulationSummary(f, curMinDist, curMeanDist, curMaxTime, curMeanTime));
-			if (curFitness > bestFitness) { // the worst-case is kept
+			if (curFitness > worseFitness) { // the worst-case is kept
 				nonEvacuees = f;
 				minDistance = curMinDist;
 				meanDistance = curMeanDist;
 				maxTime = curMaxTime;
 				meanTime = curMeanTime;
+				worseFitness = curFitness;
 			}
 			
 //			if (f > 0) {
