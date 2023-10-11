@@ -64,54 +64,52 @@ public class RunGreedyExitPlacement {
 	
 		
 		// Configure the problem
-	    Environment environment = Environment.fromFile(args[1]);
-	    int numExits = Integer.parseInt(args[2]);
-	    eep = new ExitEvacuationProblem (environment, numExits);
-	    SimulationConfiguration simulationConf = SimulationConfiguration.fromFile(args[3]);
-	    eep.setSimulationConfiguration(simulationConf);
-	    System.out.println(eep);
-	    
-	    decoder = new Double2AccessDecoder(eep);
-    
-	    GreedyPerimetralExitPlacement gpep = new GreedyPerimetralExitPlacement(eep);
-	    gpep.setVerbosityLevel(0);
-	    // this is the equivalent number of simulations required to compute a solution
-	    int cost = (int)(Math.ceil(eep.getPerimeterLength()/eep.getExitWidth())*numExits);
-	    
-	    // Prepare the output files
-	    PrintWriter stats = new PrintWriter (new File(STATS_FILENAME));
-	    stats.println("run,evals,fitness");
-	    PrintWriter sols = new PrintWriter (new File(SOL_FILENAME));
-	    sols.print("run,evals");
-	    for (int i=0; i<numExits; i++)
-	    	sols.print(",exit" + i);
-	    sols.println();
-	    
-	    for (int i=0; i<numruns; i++) {
-	    	System.out.println("Run " + i);
-	    	long evals = 0;
-	    	double best = Double.POSITIVE_INFINITY;
-	    	List<Double> bestsol = null;
-	    	while (evals < maxevals) {
-	    		List<Double> locations = gpep.getExits(numExits);
-	    		List<Access> exits = decode(locations);
-	    		double fitness = eep.fitness(eep.simulate(exits));
-	    		evals += cost;
-	    		if (fitness < best) {
-	    			best = fitness;
-	    			bestsol = locations;
-	    			sols.print(i + "," + evals + "," + best);
-	    		    for (int k=0; k<numExits; k++)
-	    		    	sols.print("," + bestsol.get(k));
-	    		    sols.println();
-		    		System.out.println(i + "\t" + evals + "\t" + best);
-	    		}
-	    		stats.println(i + "," + evals + "," + best);
-	    	}
-	    }
-	    stats.close();
-	    sols.close();
-	
+		Environment environment = Environment.fromFile(args[1]);
+		int numExits = Integer.parseInt(args[2]);
+		SimulationConfiguration simulationConf = SimulationConfiguration.fromFile(args[3]);
+		eep = new ExitEvacuationProblem (environment, numExits, simulationConf);
+		System.out.println(eep);
+
+		decoder = new Double2AccessDecoder(eep);
+
+		GreedyPerimetralExitPlacement gpep = new GreedyPerimetralExitPlacement(eep);
+		gpep.setVerbosityLevel(0);
+		// this is the equivalent number of simulations required to compute a solution
+		int cost = (int)(Math.ceil(eep.getPerimeterLength()/eep.getExitWidth())*numExits);
+
+		// Prepare the output files
+		PrintWriter stats = new PrintWriter (new File(STATS_FILENAME));
+		stats.println("run,evals,fitness");
+		PrintWriter sols = new PrintWriter (new File(SOL_FILENAME));
+		sols.print("run,evals");
+		for (int i=0; i<numExits; i++)
+			sols.print(",exit" + i);
+		sols.println();
+
+		for (int i=0; i<numruns; i++) {
+			System.out.println("Run " + i);
+			long evals = 0;
+			double best = Double.POSITIVE_INFINITY;
+			List<Double> bestsol = null;
+			while (evals < maxevals) {
+				List<Double> locations = gpep.getExits(numExits);
+				List<Access> exits = decode(locations);
+				double fitness = eep.fitness(eep.simulate(exits));
+				evals += cost;
+				if (fitness < best) {
+					best = fitness;
+					bestsol = locations;
+					sols.print(i + "," + evals + "," + best);
+						for (int k=0; k<numExits; k++)
+							sols.print("," + bestsol.get(k));
+						sols.println();
+					System.out.println(i + "\t" + evals + "\t" + best);
+				}
+				stats.println(i + "," + evals + "," + best);
+			}
+		}
+		stats.close();
+		sols.close();
 	}
 
 	/**

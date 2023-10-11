@@ -47,14 +47,13 @@ public class RunEvacuationOptimization {
 		myEA.setVerbosityLevel(1);
 		
 		// Configure the problem
-	    Environment environment = Environment.fromFile("base-" + args[1] + ".json");
-	    int numExits = Integer.parseInt(args[2]);
-	    ExitEvacuationProblem eep = new ExitEvacuationProblem (environment, numExits);
-	    SimulationConfiguration simulationConf = SimulationConfiguration.fromFile(args[3]);
-	    eep.setSimulationConfiguration(simulationConf);
+		Environment environment = Environment.fromFile("base-" + args[1] + ".json");
+		int numExits = Integer.parseInt(args[2]);
+		SimulationConfiguration simulationConf = SimulationConfiguration.fromFile(args[3]);
+		ExitEvacuationProblem eep = new ExitEvacuationProblem (environment, numExits, simulationConf);
 		myEA.setObjectiveFunction(new PerimetralExitOptimizationFunction(eep));
 		myEA.getStatistics().setDiversityMeasure(new CircularSetDiversity(1.0));
-	    System.out.println(eep);
+		System.out.println(eep);
 		
 		for (int i=0; i<numruns; i++) {
 			long seed = firstSeed + i;
