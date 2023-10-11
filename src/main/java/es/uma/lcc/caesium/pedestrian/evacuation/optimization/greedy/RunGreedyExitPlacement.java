@@ -26,13 +26,17 @@ import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Environmen
  */
 public class RunGreedyExitPlacement {
 	/**
-	 * stats filename
+	 * environment filename prefix
 	 */
-	private static final String STATS_FILENAME = "greedy_stats.csv";
+	private static final String ENVIRONMENT_FILENAME = "base-";
 	/**
-	 * solution filename
+	 * stats filename prefix
 	 */
-	private static final String SOL_FILENAME = "greedy_solutions.csv";
+	private static final String STATS_FILENAME = "greedy_stats_";
+	/**
+	 * solution filename prefix
+	 */
+	private static final String SOL_FILENAME = "greedy_solutions_";
 	/**
 	 * to decode locations
 	 */
@@ -50,7 +54,9 @@ public class RunGreedyExitPlacement {
 	 */
 	public static void main(String[] args) throws FileNotFoundException, JsonException {
 		if (args.length < 4) {
-			System.out.println ("Required parameters: <greedy-configuration> <environment-configuration-file> <num-exits> <simulation-configuration>");
+			System.out.println ("Required parameters: <greedy-configuration> <environment-name> <num-exits> <simulation-configuration>");
+			System.out.println ("\nNote that the environment configuration file will be sought as " + ENVIRONMENT_FILENAME + "<environment-name>.json,");
+			System.out.println ("and the statistics will be dumped to a file named " + STATS_FILENAME + "greedy_stats-<environment-name>.csv");
 			System.exit(1);
 		}
 		
@@ -58,7 +64,7 @@ public class RunGreedyExitPlacement {
 		FileReader reader = new FileReader(args[0]);
 		JsonObject json = (JsonObject) Jsoner.deserialize(reader);
 		
-		EAUtil.setSeed(JsonUtil.getLong(json, "seed"));
+		long baseSeed = JsonUtil.getLong(json, "seed"); 
 		int numruns = JsonUtil.getInt(json, "numruns");
 		long maxevals = JsonUtil.getLong(json, "maxevals");
 	
@@ -79,9 +85,9 @@ public class RunGreedyExitPlacement {
 	    int cost = (int)(Math.ceil(eep.getPerimeterLength()/eep.getExitWidth())*numExits);
 	    
 	    // Prepare the output files
-	    PrintWriter stats = new PrintWriter (new File(STATS_FILENAME));
+	    PrintWriter stats = new PrintWriter (new File(STATS_FILENAME + args[1] + ".csv"));
 	    stats.println("run,evals,fitness");
-	    PrintWriter sols = new PrintWriter (new File(SOL_FILENAME));
+	    PrintWriter sols = new PrintWriter (new File(SOL_FILENAME + args[1] + ".csv"));
 	    sols.print("run,evals");
 	    for (int i=0; i<numExits; i++)
 	    	sols.print(",exit" + i);
@@ -92,6 +98,7 @@ public class RunGreedyExitPlacement {
 	    	long evals = 0;
 	    	double best = Double.POSITIVE_INFINITY;
 	    	List<Double> bestsol = null;
+	    	EAUtil.setSeed(baseSeed + i);	// sets the seed for the current run
 	    	while (evals < maxevals) {
 	    		List<Double> locations = gpep.getExits(numExits);
 	    		List<Access> exits = decode(locations);
@@ -124,7 +131,7 @@ public class RunGreedyExitPlacement {
 		List<Access> exits = new ArrayList<>(numExits);
 		var id = 0;
 		for (int exit=0; exit<numExits; exit++) {
-			double location = ((double)locations.get(exit))*(eep.getPerimeterLength()-eep.getExitWidth());
+			double location = ((double)locations.get(exit)) * eep.getPerimeterLength();
 			exits.addAll(decoder.decodeAccess(location, exit, id));
 			id = exits.size();
 		}
