@@ -17,7 +17,7 @@ import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Environmen
 
 /**
  * Class for running the evacuation optimization algorithm
- * @author ccottap
+ * @author ccottap, ppgllrd
  * @version 1.0
  */
 public class RunEvacuationOptimization {
@@ -29,6 +29,9 @@ public class RunEvacuationOptimization {
 	 * @throws JsonException if the configuration file is not correctly formatted
 	 */
 	public static void main(String[] args) throws FileNotFoundException, JsonException {
+		// set US locale
+		Locale.setDefault(Locale.US);
+
 		EAConfiguration conf;
 		if (args.length < 4) {
 			System.out.println ("Required parameters: <ea-configuration-file> <environment-name> <num-exits> <simulation-configuration>");
@@ -59,7 +62,7 @@ public class RunEvacuationOptimization {
 			long seed = firstSeed + i;
 			myEA.run(seed);
 			System.out.println ("Run " + i + ": " + 
-								String.format(Locale.US, "%.2f", myEA.getStatistics().getTime(i)) + "s\t" +
+								String.format("%.2f", myEA.getStatistics().getTime(i)) + "s\t" +
 								myEA.getStatistics().getBest(i).getFitness());
 		}
 		PrintWriter file = new PrintWriter("stats-" + args[1] + ".json");

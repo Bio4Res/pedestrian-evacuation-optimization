@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
@@ -21,7 +22,7 @@ import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Environmen
 
 /**
  * Class for running the greedy evacuation optimization algorithm
- * @author ccottap
+ * @author ccottap, ppgllrd
  * @version 1.0
  */
 public class RunGreedyExitPlacement {
@@ -49,6 +50,9 @@ public class RunGreedyExitPlacement {
 	 * @throws JsonException if the configuration file is not correctly formatted
 	 */
 	public static void main(String[] args) throws FileNotFoundException, JsonException {
+		// set US locale
+		Locale.setDefault(Locale.US);
+
 		if (args.length < 4) {
 			System.out.println ("Required parameters: <greedy-configuration> <environment-configuration-file> <num-exits> <simulation-configuration>");
 			System.exit(1);
@@ -114,7 +118,7 @@ public class RunGreedyExitPlacement {
 
 	/**
 	 * Decodes a list of locations
-	 * @param locations a its of locations in [0,1]
+	 * @param locations a list of locations in [0,1]
 	 * @return a list of accesses
 	 */
 	private static List<Access> decode(List<Double> locations) {
@@ -122,7 +126,7 @@ public class RunGreedyExitPlacement {
 		List<Access> exits = new ArrayList<>(numExits);
 		var id = 0;
 		for (int exit=0; exit<numExits; exit++) {
-			double location = ((double)locations.get(exit))*(eep.getPerimeterLength()-eep.getExitWidth());
+			double location = locations.get(exit)*(eep.getPerimeterLength()-eep.getExitWidth());
 			exits.addAll(decoder.decodeAccess(location, exit, id));
 			id = exits.size();
 		}
