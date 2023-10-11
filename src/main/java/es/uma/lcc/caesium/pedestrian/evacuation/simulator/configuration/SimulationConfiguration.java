@@ -74,7 +74,7 @@ public class SimulationConfiguration {
 		switch (type.toUpperCase()) {
 		case "CA":
 			JsonObject ca = (JsonObject)simulator.get("cellularAutomatonParameters");
-			conf.parameters.put("cellularAutomatonParameters/cellDimension", Integer.toString(JsonUtil.getInt(ca, "cellDimension")));
+			conf.parameters.put("cellularAutomatonParameters/cellDimension", Double.toString(JsonUtil.getDouble(ca, "cellDimension")));
 			conf.parameters.put("cellularAutomatonParameters/neighborhood", (String)ca.get("neighborhood"));		
 			conf.parameters.put("cellularAutomatonParameters/floorField", (String)ca.get("floorField"));	
 			break;
@@ -135,7 +135,7 @@ public class SimulationConfiguration {
 		str += "\nsimulator type:                " + type;
 		switch (type) {
 		case "CA" :
-			str += "\ncell dimension:                " + getInt("cellularAutomatonParameters/cellDimension")
+			str += "\ncell dimension:                " + getDouble("cellularAutomatonParameters/cellDimension")
 			     + "\nneighborhood:                  " + getString("cellularAutomatonParameters/neighborhood")
 			     + "\nfloor field:                   " + getString("cellularAutomatonParameters/floorField");
 			break;
