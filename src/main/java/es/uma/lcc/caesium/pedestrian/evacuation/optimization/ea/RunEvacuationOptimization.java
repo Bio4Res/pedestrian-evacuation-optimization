@@ -21,6 +21,14 @@ import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Environmen
  * @version 1.0
  */
 public class RunEvacuationOptimization {
+	/**
+	 * environment filename prefix
+	 */
+	private static final String ENVIRONMENT_FILENAME = "base-";
+	/**
+	 * stats filename prefix
+	 */
+	private static final String STATS_FILENAME = "ea-stats-";
 
 	/**
 	 * Main method
@@ -32,8 +40,8 @@ public class RunEvacuationOptimization {
 		EAConfiguration conf;
 		if (args.length < 4) {
 			System.out.println ("Required parameters: <ea-configuration-file> <environment-name> <num-exits> <simulation-configuration>");
-			System.out.println ("\nNote that the environment configuration file will be sought as base-<environment-name>.json,");
-			System.out.println ("and the statistics will be dumped to a file name stats-<environment-name>.json");
+			System.out.println ("\nNote that the environment configuration file will be sought as " + ENVIRONMENT_FILENAME + "<environment-name>.json,");
+			System.out.println ("and the statistics will be dumped to a file named " + STATS_FILENAME + "<environment-name>.json");
 			System.exit(1);
 		}
 		
@@ -47,7 +55,7 @@ public class RunEvacuationOptimization {
 		myEA.setVerbosityLevel(1);
 		
 		// Configure the problem
-	    Environment environment = Environment.fromFile("base-" + args[1] + ".json");
+	    Environment environment = Environment.fromFile(ENVIRONMENT_FILENAME + args[1] + ".json");
 	    int numExits = Integer.parseInt(args[2]);
 	    ExitEvacuationProblem eep = new ExitEvacuationProblem (environment, numExits);
 	    SimulationConfiguration simulationConf = SimulationConfiguration.fromFile(args[3]);
@@ -63,7 +71,7 @@ public class RunEvacuationOptimization {
 								String.format(Locale.US, "%.2f", myEA.getStatistics().getTime(i)) + "s\t" +
 								myEA.getStatistics().getBest(i).getFitness());
 		}
-		PrintWriter file = new PrintWriter("stats-" + args[1] + ".json");
+		PrintWriter file = new PrintWriter(STATS_FILENAME + args[1] + ".json");
 		file.print(myEA.getStatistics().toJSON().toJson());
 		file.close();
 	}

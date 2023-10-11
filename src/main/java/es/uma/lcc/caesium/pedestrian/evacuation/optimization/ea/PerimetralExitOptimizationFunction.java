@@ -24,10 +24,6 @@ import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Access;
  */
 public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunction {
 	/**
-	 * Width of exits in meters
-	 */
-	private final double exitWidth;
-	/**
 	 * number of exits
 	 */
 	private final int numExits;
@@ -52,7 +48,6 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 		super(eep.getNumExits(), 0.0, 1.0);
 		numExits = eep.getNumExits();
 		perimeterLength = eep.getPerimeterLength();
-		exitWidth = eep.getExitWidth();
 		this.eep = eep;
 		decoder = new Double2AccessDecoder(eep);
 	}
