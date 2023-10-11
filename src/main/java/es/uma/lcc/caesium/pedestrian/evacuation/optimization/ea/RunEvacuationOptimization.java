@@ -17,7 +17,7 @@ import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Environmen
 
 /**
  * Class for running the evacuation optimization algorithm
- * @author ccottap
+ * @author ccottap, ppgllrd
  * @version 1.0
  */
 public class RunEvacuationOptimization {
@@ -37,6 +37,9 @@ public class RunEvacuationOptimization {
 	 * @throws JsonException if the configuration file is not correctly formatted
 	 */
 	public static void main(String[] args) throws FileNotFoundException, JsonException {
+		// set US locale
+		Locale.setDefault(Locale.US);
+
 		EAConfiguration conf;
 		if (args.length < 4) {
 			System.out.println ("Required parameters: <ea-configuration-file> <environment-name> <num-exits> <simulation-configuration>");
@@ -56,19 +59,18 @@ public class RunEvacuationOptimization {
 		
 		// Configure the problem
 	    Environment environment = Environment.fromFile(ENVIRONMENT_FILENAME + args[1] + ".json");
+		SimulationConfiguration simulationConf = SimulationConfiguration.fromFile(args[3]);
 	    int numExits = Integer.parseInt(args[2]);
-	    ExitEvacuationProblem eep = new ExitEvacuationProblem (environment, numExits);
-	    SimulationConfiguration simulationConf = SimulationConfiguration.fromFile(args[3]);
-	    eep.setSimulationConfiguration(simulationConf);
+	    ExitEvacuationProblem eep = new ExitEvacuationProblem (environment, numExits, simulationConf);
 		myEA.setObjectiveFunction(new PerimetralExitOptimizationFunction(eep));
 		myEA.getStatistics().setDiversityMeasure(new CircularSetDiversity(1.0));
-	    System.out.println(eep);
+		System.out.println(eep);
 		
 		for (int i=0; i<numruns; i++) {
 			long seed = firstSeed + i;
 			myEA.run(seed);
 			System.out.println ("Run " + i + ": " + 
-								String.format(Locale.US, "%.2f", myEA.getStatistics().getTime(i)) + "s\t" +
+								String.format("%.2f", myEA.getStatistics().getTime(i)) + "s\t" +
 								myEA.getStatistics().getBest(i).getFitness());
 		}
 		PrintWriter file = new PrintWriter(STATS_FILENAME + args[1] + ".json");

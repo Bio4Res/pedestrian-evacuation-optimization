@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
@@ -21,7 +22,7 @@ import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Environmen
 
 /**
  * Class for running the greedy evacuation optimization algorithm
- * @author ccottap
+ * @author ccottap, ppgllrd
  * @version 1.0
  */
 public class RunGreedyExitPlacement {
@@ -53,6 +54,9 @@ public class RunGreedyExitPlacement {
 	 * @throws JsonException if the configuration file is not correctly formatted
 	 */
 	public static void main(String[] args) throws FileNotFoundException, JsonException {
+		// set US locale
+		Locale.setDefault(Locale.US);
+
 		if (args.length < 4) {
 			System.out.println ("Required parameters: <greedy-configuration> <environment-name> <num-exits> <simulation-configuration>");
 			System.out.println ("\nNote that the environment configuration file will be sought as " + ENVIRONMENT_FILENAME + "<environment-name>.json,");
@@ -72,9 +76,8 @@ public class RunGreedyExitPlacement {
 		// Configure the problem
 	    Environment environment = Environment.fromFile(args[1]);
 	    int numExits = Integer.parseInt(args[2]);
-	    eep = new ExitEvacuationProblem (environment, numExits);
 	    SimulationConfiguration simulationConf = SimulationConfiguration.fromFile(args[3]);
-	    eep.setSimulationConfiguration(simulationConf);
+	    eep = new ExitEvacuationProblem (environment, numExits, simulationConf);
 	    System.out.println(eep);
 	    
 	    decoder = new Double2AccessDecoder(eep);
@@ -118,12 +121,11 @@ public class RunGreedyExitPlacement {
 	    }
 	    stats.close();
 	    sols.close();
-	
 	}
 
 	/**
 	 * Decodes a list of locations
-	 * @param locations a its of locations in [0,1]
+	 * @param locations a list of locations in [0,1]
 	 * @return a list of accesses
 	 */
 	private static List<Access> decode(List<Double> locations) {

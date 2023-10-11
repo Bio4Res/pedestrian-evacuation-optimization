@@ -66,45 +66,94 @@ public class ExitEvacuationProblem {
 	/**
 	 * the parameters used by the simulator
 	 */
-	private SimulationConfiguration simulationConf = null;
+	private final SimulationConfiguration simulationConf;
 
+	/**
+	 * the domain where simulation takes place (assumes a single domain)
+	 */
+	private final Domain domain;
+
+	/**
+	 * the time limit for simulation
+	 */
+	private final double timeLimit;
+
+	/**
+	 * the type of static floor field to use
+	 */
+	private final Function<Scenario, FloorField> floorField;
+
+	/**
+	 * the type of neighbourhood to use in automaton
+	 */
+	private final Function<Scenario, Neighbourhood> neighbourhood;
+
+	/**
+	 * the number of independent simulations to run for each evaluation
+	 */
+	private final int numSimulations;
+
+	/**
+	 * the remaining parameters for the simulation
+	 */
+	private final double cellDimension, pedestrianReferenceVelocity, attractionBiasMin, attractionBiasMax,
+			crowdRepulsionMin, crowdRepulsionMax, velocityFactorMin, velocityFactorMax;
+	private final int numPedestriansMin, numPedestriansMax;
 
 	/**
 	 * Basic constructor
-	 * @param env the environment
-	 * @param numExits the number of exits
-	 */
-	public ExitEvacuationProblem(Environment env, int numExits) {
-		assert env.getDomainsIDs().size() == 1 : "Too many domains";
-		this.numExits = numExits;
-		environment = env;
-		Domain d = environment.getDomain(1); // assume a single domain
-		perimeterLength = 2*(d.getHeight()+d.getWidth());
-		diameter = Math.sqrt(Math.pow(d.getHeight(), 2) + Math.pow(d.getWidth(), 2));
-		fixedAccesses = new ArrayList<>(environment.getDomain(1).getAccesses());
-		setExitWidth(DEFAULT_EXIT_WIDTH); 
-	}
-	
-	/**
-	 * Creates the problem indicating the environment, the number of exits and their width
-	 * @param env the environment
+	 * @param environment the environment
 	 * @param numExits the number of exits
 	 * @param width the exit width
+	 * @param simulationConf the parameters used by the simulator
 	 */
-	public ExitEvacuationProblem(Environment env, int numExits, double width) {
-		this(env, numExits);
+	public ExitEvacuationProblem(Environment environment, int numExits, double width, SimulationConfiguration simulationConf) {
+		assert environment.getDomainsIDs().size() == 1 : "Too many domains";
+		this.environment = environment;
+		this.numExits = numExits;
+		this.simulationConf = simulationConf;
 		setExitWidth(width);
+		domain = environment.getDomain(1); // assume a single domain
+		perimeterLength = 2*(domain.getHeight()+domain.getWidth());
+		diameter = Math.sqrt(Math.pow(domain.getHeight(), 2) + Math.pow(domain.getWidth(), 2));
+		fixedAccesses = new ArrayList<>(this.environment.getDomain(1).getAccesses());
+		timeLimit = simulationConf.getDouble("timeLimit");
+		numSimulations = simulationConf.getInt("numSimulations");
+		cellDimension = simulationConf.getDouble("cellularAutomatonParameters/cellDimension");
+		pedestrianReferenceVelocity = simulationConf.getDouble("crowd/pedestrianReferenceVelocity");
+		attractionBiasMin = simulationConf.getDouble("crowd/attractionBias/min");
+		attractionBiasMax = simulationConf.getDouble("crowd/attractionBias/max");
+		crowdRepulsionMin = simulationConf.getDouble("crowd/crowdRepulsion/min");
+		crowdRepulsionMax = simulationConf.getDouble("crowd/crowdRepulsion/max");
+		velocityFactorMin = simulationConf.getDouble("crowd/velocityFactor/min");
+		velocityFactorMax = simulationConf.getDouble("crowd/velocityFactor/max");
+		numPedestriansMin = simulationConf.getInt("crowd/numPedestrians/min");
+		numPedestriansMax = simulationConf.getInt("crowd/numPedestrians/max");
+		floorField =
+				switch (simulationConf.getString("cellularAutomatonParameters/floorField")) {
+					case "DijkstraStaticMoore" -> DijkstraStaticFloorFieldWithMooreNeighbourhood::of;
+					case "DijkstraStaticVonNeumann" -> DijkstraStaticFloorFieldWithVonNewmanNeighbourhood::of;
+					case "ManhattanStatic" -> ManhattanStaticFloorField::of;
+					default -> throw new IllegalArgumentException("Invalid floor field in configuration");
+				};
+		neighbourhood =
+				switch (simulationConf.getString("cellularAutomatonParameters/neighborhood")) {
+					case "Moore" -> MooreNeighbourhood::of;
+					case "VonNeumann" -> VonNeumannNeighbourhood::of;
+					default -> throw new IllegalArgumentException("Invalid neighbourhood in configuration");
+				};
 	}
-	
+
 	/**
-	 * Sets the parameters of the simulation (simulator parameters + crowd parameters)
-	 * @param conf configuration of the simulation
+	 * Constructor using default width
+	 * @param environment the environment
+	 * @param numExits the number of exits
+	 * @param simulationConf the parameters used by the simulator
 	 */
-	public void setSimulationConfiguration (SimulationConfiguration conf) {
-		simulationConf = conf;
+	public ExitEvacuationProblem(Environment environment, int numExits, SimulationConfiguration simulationConf) {
+		this(environment, numExits, DEFAULT_EXIT_WIDTH, simulationConf);
 	}
-	
-	
+
 	/**
 	 * Returns the environment
 	 * @return the environment
@@ -177,11 +226,9 @@ public class ExitEvacuationProblem {
 	 * @return a summary of the simulation(s) performed
 	 */
 	public SimulationSummary simulate (List<Access> accesses) {
-		var domain = environment.getDomain(1);
 		var domainAccesses = domain.getAccesses();
 		domainAccesses.addAll(accesses);
 
-		int numSimulations = simulationConf.getInt("numSimulations");
 		// simulation metrics
 		double nonEvacuees = 0.0;
 		double minDistance = 0.0;
@@ -190,38 +237,21 @@ public class ExitEvacuationProblem {
 		double meanTime = 0.0;
 		double worseFitness = Double.NEGATIVE_INFINITY;
 
-		
 		// simulate
-
-		Function<Scenario, FloorField> floorField =
-				switch (simulationConf.getString("cellularAutomatonParameters/floorField")) {
-					case "DijkstraStaticMoore" -> DijkstraStaticFloorFieldWithMooreNeighbourhood::of;
-					case "DijkstraStaticVonNeumann" -> DijkstraStaticFloorFieldWithVonNewmanNeighbourhood::of;
-					case "ManhattanStatic" -> ManhattanStaticFloorField::of;
-					default -> throw new IllegalArgumentException();
-				};
 
 		// create common scenario for all simulations
 		Scenario scenario = new Scenario.FromDomainBuilder(domain)
-				.cellDimension(simulationConf.getInt("cellularAutomatonParameters/cellDimension"))
+				.cellDimension(cellDimension)
 				.floorField(floorField)
 				.build();
-
-		Function<Scenario, Neighbourhood> neighbourhood =
-		switch (simulationConf.getString("cellularAutomatonParameters/neighborhood")) {
-			case "Moore" -> MooreNeighbourhood::of;
-			case "VonNeumann" -> VonNeumannNeighbourhood::of;
-			default -> throw new IllegalArgumentException();
-		};
 
 		// create automaton for all simulations
 		var cellularAutomatonParameters =
 				new CellularAutomatonParameters.Builder()
 						.scenario(scenario) // use this scenario
-						.timeLimit(simulationConf.getDouble("timeLimit")) // time limit for simulation (in seconds)
+						.timeLimit(timeLimit) // time limit for simulation (in seconds)
 						.neighbourhood(neighbourhood) // use this neighborhood for automaton
-						.pedestrianReferenceVelocity(simulationConf.getDouble("crowd/pedestrianReferenceVelocity"))
-								// fastest pedestrian speed
+						.pedestrianReferenceVelocity(pedestrianReferenceVelocity) // fastest pedestrian speed
 						.build();
 
 		var automaton = new CellularAutomaton(cellularAutomatonParameters);
@@ -235,12 +265,12 @@ public class ExitEvacuationProblem {
 			// place pedestrians for this simulation
 			Supplier<PedestrianParameters> pedestrianParametersSupplier = () ->
 					new PedestrianParameters.Builder()
-							.fieldAttractionBias(random.nextDouble(simulationConf.getDouble("crowd/attractionBias/min"), simulationConf.getDouble("crowd/attractionBias/max")))
-							.crowdRepulsion(random.nextDouble(simulationConf.getDouble("crowd/crowdRepulsion/min"), simulationConf.getDouble("crowd/crowdRepulsion/max")))
-							.velocityPercent(random.nextDouble(simulationConf.getDouble("crowd/velocityFactor/min"), simulationConf.getDouble("crowd/velocityFactor/max")))
+							.fieldAttractionBias(random.nextDouble(attractionBiasMin, attractionBiasMax))
+							.crowdRepulsion(random.nextDouble(crowdRepulsionMin, crowdRepulsionMax))
+							.velocityPercent(random.nextDouble(velocityFactorMin, velocityFactorMax))
 							.build();
 
-			var numberOfPedestrians = random.nextInt(simulationConf.getInt("crowd/numPedestrians/min"), simulationConf.getInt("crowd/numPedestrians/max") + 1);
+			var numberOfPedestrians = random.nextInt(numPedestriansMin, numPedestriansMax + 1);
 			automaton.addPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
 
 			// run the simulation
@@ -287,7 +317,7 @@ public class ExitEvacuationProblem {
 		domainAccesses.clear();
 		domainAccesses.addAll(fixedAccesses);
 		
-		// average results after all simulations
+// 		average results after all simulations
 //		meanDistance /= nonEvacuees;
 //		nonEvacuees /= numSimulations;
 //		minDistance /= numSimulations;
@@ -297,14 +327,12 @@ public class ExitEvacuationProblem {
 		return new SimulationSummary(nonEvacuees, minDistance, meanDistance, maxTime, meanTime);
 	}
 
-	
 	/**
 	 * Computes fitness given the results of the simulation(s)
 	 * @param summary summary of the simulation results
 	 * @return a numeric value (to be minimized) representing the goodness of the simulation results.
 	 */
 	public double fitness(SimulationSummary summary) {
-		double timeLimit = simulationConf.getDouble("timeLimit");
 		double f = summary.nonEvacuees();
 		if (f > 0) {
 			f += summary.minDistance() / diameter + summary.meanDistance() / Math.pow(diameter, 2);
