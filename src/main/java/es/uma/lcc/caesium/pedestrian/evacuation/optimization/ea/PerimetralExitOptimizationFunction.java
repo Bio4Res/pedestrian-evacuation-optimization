@@ -19,7 +19,7 @@ import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Access;
  * number of exits in the perimeter of a given environment, so that the evacuation 
  * performance is optimized.
  * @author ccottap, ppgllrd
- * @version 1.1
+ * @version 1.2
  *
  */
 public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunction {
@@ -40,6 +40,7 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 	 */
 	private Double2AccessDecoder decoder;
 	
+	
 	/**
 	 * Basic constructor
 	 * @param eep the evacuation problem
@@ -51,6 +52,16 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 		this.eep = eep;
 		decoder = new Double2AccessDecoder(eep);
 	}
+	
+	
+	/**
+	 * Returns the exit evacuation problem being solved
+	 * @return the exit evacuation problem being solved
+	 */
+	public ExitEvacuationProblem getExitEvacuationProblem() {
+		return eep;
+	}
+	
 	
 	/**
 	 * Indicates whether the goal is maximization or minimization

@@ -1,23 +1,20 @@
 package es.uma.lcc.caesium.pedestrian.evacuation.optimization.greedy;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 
-import es.uma.lcc.caesium.ea.util.EAUtil;
-import es.uma.lcc.caesium.ea.util.JsonUtil;
-import es.uma.lcc.caesium.pedestrian.evacuation.optimization.Double2AccessDecoder;
+import es.uma.lcc.caesium.ea.base.EvolutionaryAlgorithm;
+import es.uma.lcc.caesium.ea.config.EAConfiguration;
 import es.uma.lcc.caesium.pedestrian.evacuation.optimization.ExitEvacuationProblem;
+import es.uma.lcc.caesium.pedestrian.evacuation.optimization.ea.CircularSetDiversity;
+import es.uma.lcc.caesium.pedestrian.evacuation.optimization.ea.PerimetralExitOptimizationFunction;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.configuration.SimulationConfiguration;
-import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Access;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Environment;
 
 /**
@@ -33,20 +30,10 @@ public class RunGreedyExitPlacement {
 	/**
 	 * stats filename prefix
 	 */
-	private static final String STATS_FILENAME = "greedy_stats_";
-	/**
-	 * solution filename prefix
-	 */
-	private static final String SOL_FILENAME = "greedy_solutions_";
-	/**
-	 * to decode locations
-	 */
-	private static Double2AccessDecoder decoder;
-	/**
-	 * the evacuation problem
-	 */
-	private static ExitEvacuationProblem eep;
-
+	private static final String STATS_FILENAME = "greedy-stats-";
+	
+	
+	
 	/**
 	 * Main method
 	 * @param args command-line arguments
@@ -57,86 +44,42 @@ public class RunGreedyExitPlacement {
 		// set US locale
 		Locale.setDefault(Locale.US);
 
+		EAConfiguration conf;
 		if (args.length < 4) {
-			System.out.println ("Required parameters: <greedy-configuration> <environment-name> <num-exits> <simulation-configuration>");
+			System.out.println ("Required parameters: <greedy-configuration-file> <environment-name> <num-exits> <simulation-configuration>");
 			System.out.println ("\nNote that the environment configuration file will be sought as " + ENVIRONMENT_FILENAME + "<environment-name>.json,");
-			System.out.println ("and the statistics will be dumped to a file named " + STATS_FILENAME + "greedy_stats-<environment-name>.csv");
+			System.out.println ("and the statistics will be dumped to a file named " + STATS_FILENAME + "<environment-name>.json");
 			System.exit(1);
 		}
 		
-		// Configure the greedy resolution
+		// Configure the EA
 		FileReader reader = new FileReader(args[0]);
-		JsonObject json = (JsonObject) Jsoner.deserialize(reader);
-		
-		long baseSeed = JsonUtil.getLong(json, "seed"); 
-		int numruns = JsonUtil.getInt(json, "numruns");
-		long maxevals = JsonUtil.getLong(json, "maxevals");
-	
+		conf = new EAConfiguration((JsonObject) Jsoner.deserialize(reader));
+		int numruns = conf.getNumRuns();
+		long firstSeed = conf.getSeed();
+		conf.setVariationFactory(new GreedyVariationFactory());
+		System.out.println(conf);
+		EvolutionaryAlgorithm myEA = new EvolutionaryAlgorithm(conf);
+		myEA.setVerbosityLevel(1);
 		
 		// Configure the problem
-	    Environment environment = Environment.fromFile(args[1]);
+	    Environment environment = Environment.fromFile(ENVIRONMENT_FILENAME + args[1] + ".json");
+		SimulationConfiguration simulationConf = SimulationConfiguration.fromFile(args[3]);
 	    int numExits = Integer.parseInt(args[2]);
-	    SimulationConfiguration simulationConf = SimulationConfiguration.fromFile(args[3]);
-	    eep = new ExitEvacuationProblem (environment, numExits, simulationConf);
-	    System.out.println(eep);
-	    
-	    decoder = new Double2AccessDecoder(eep);
-    
-	    GreedyPerimetralExitPlacement gpep = new GreedyPerimetralExitPlacement(eep);
-	    gpep.setVerbosityLevel(0);
-	    // this is the equivalent number of simulations required to compute a solution
-	    int cost = (int)(Math.ceil(eep.getPerimeterLength()/eep.getExitWidth())*numExits);
-	    
-	    // Prepare the output files
-	    PrintWriter stats = new PrintWriter (new File(STATS_FILENAME + args[1] + ".csv"));
-	    stats.println("run,evals,fitness");
-	    PrintWriter sols = new PrintWriter (new File(SOL_FILENAME + args[1] + ".csv"));
-	    sols.print("run,evals");
-	    for (int i=0; i<numExits; i++)
-	    	sols.print(",exit" + i);
-	    sols.println();
-	    
-	    for (int i=0; i<numruns; i++) {
-	    	System.out.println("Run " + i);
-	    	long evals = 0;
-	    	double best = Double.POSITIVE_INFINITY;
-	    	List<Double> bestsol = null;
-	    	EAUtil.setSeed(baseSeed + i);	// sets the seed for the current run
-	    	while (evals < maxevals) {
-	    		List<Double> locations = gpep.getExits(numExits);
-	    		List<Access> exits = decode(locations);
-	    		double fitness = eep.fitness(eep.simulate(exits));
-	    		evals += cost;
-	    		if (fitness < best) {
-	    			best = fitness;
-	    			bestsol = locations;
-	    			sols.print(i + "," + evals + "," + best);
-	    		    for (int k=0; k<numExits; k++)
-	    		    	sols.print("," + bestsol.get(k));
-	    		    sols.println();
-		    		System.out.println(i + "\t" + evals + "\t" + best);
-	    		}
-	    		stats.println(i + "," + evals + "," + best);
-	    	}
-	    }
-	    stats.close();
-	    sols.close();
-	}
-
-	/**
-	 * Decodes a list of locations
-	 * @param locations a list of locations in [0,1]
-	 * @return a list of accesses
-	 */
-	private static List<Access> decode(List<Double> locations) {
-		int numExits = locations.size();
-		List<Access> exits = new ArrayList<>(numExits);
-		var id = 0;
-		for (int exit=0; exit<numExits; exit++) {
-			double location = ((double)locations.get(exit)) * eep.getPerimeterLength();
-			exits.addAll(decoder.decodeAccess(location, exit, id));
-			id = exits.size();
+	    ExitEvacuationProblem eep = new ExitEvacuationProblem (environment, numExits, simulationConf);
+		myEA.setObjectiveFunction(new PerimetralExitOptimizationFunction(eep));
+		myEA.getStatistics().setDiversityMeasure(new CircularSetDiversity(1.0));
+		System.out.println(eep);
+		
+		for (int i=0; i<numruns; i++) {
+			long seed = firstSeed + i;
+			myEA.run(seed);
+			System.out.println ("Run " + i + ": " + 
+								String.format("%.2f", myEA.getStatistics().getTime(i)) + "s\t" +
+								myEA.getStatistics().getBest(i).getFitness());
 		}
-		return exits;
+		PrintWriter file = new PrintWriter(STATS_FILENAME + args[1] + ".json");
+		file.print(myEA.getStatistics().toJSON().toJson());
+		file.close();
 	}
 }
