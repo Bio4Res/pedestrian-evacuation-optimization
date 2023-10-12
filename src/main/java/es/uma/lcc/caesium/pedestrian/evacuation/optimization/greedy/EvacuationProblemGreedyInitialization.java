@@ -6,7 +6,6 @@ import java.util.List;
 import es.uma.lcc.caesium.ea.base.Genotype;
 import es.uma.lcc.caesium.ea.base.Individual;
 import es.uma.lcc.caesium.ea.fitness.ObjectiveFunction;
-import es.uma.lcc.caesium.ea.operator.variation.initialization.InitializationOperator;
 import es.uma.lcc.caesium.ea.operator.variation.initialization.continuous.RandomVector;
 import es.uma.lcc.caesium.ea.util.EAUtil;
 import es.uma.lcc.caesium.pedestrian.evacuation.optimization.ea.PerimetralExitOptimizationFunction;
@@ -18,11 +17,7 @@ import es.uma.lcc.caesium.pedestrian.evacuation.optimization.ea.PerimetralExitOp
  * @version 1.0
  *
  */
-public class EvacuationProblemGreedyInitialization extends InitializationOperator {
-	/**
-	 * Internal variation operator
-	 */
-	private RandomVector op; 
+public class EvacuationProblemGreedyInitialization extends RandomVector {
 	/**
 	 * probability of applying the greedy initialization
 	 */
@@ -45,7 +40,6 @@ public class EvacuationProblemGreedyInitialization extends InitializationOperato
 		super(new ArrayList<String>(0));
 		greedyProb = Double.parseDouble(pars.get(0));
 		gpep = null;
-		op = new RandomVector(new ArrayList<String>(0));
 		extra = 0.0;
 	}
 	
@@ -55,7 +49,6 @@ public class EvacuationProblemGreedyInitialization extends InitializationOperato
 	 */
 	public void setObjectiveFunction (ObjectiveFunction obj) {
 		super.setObjectiveFunction(obj);
-		op.setObjectiveFunction(obj);
 		PerimetralExitOptimizationFunction peof = (PerimetralExitOptimizationFunction)obj;
 		gpep = new GreedyPerimetralExitPlacement(peof.getExitEvacuationProblem());
 		gpep.setVerbosityLevel(0);
@@ -75,16 +68,16 @@ public class EvacuationProblemGreedyInitialization extends InitializationOperato
 			ind.setGenome(g);
 			obj.addExtraCost(extra);
 		}
-		else 
-			ind = op.apply(parents);
-				
+		else {
+			ind = super._apply(parents);
+		}
 		return ind;
 	}
 
 	
 	@Override
 	public String toString() {
-		return "GreedyExitPlacement";
+		return "GreedyExitPlacement(" + super.toString() + ", " + greedyProb + ")";
 	}
 	
 

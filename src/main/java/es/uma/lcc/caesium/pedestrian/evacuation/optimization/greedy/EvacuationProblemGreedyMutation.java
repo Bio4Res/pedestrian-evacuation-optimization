@@ -6,7 +6,6 @@ import java.util.List;
 import es.uma.lcc.caesium.ea.base.Genotype;
 import es.uma.lcc.caesium.ea.base.Individual;
 import es.uma.lcc.caesium.ea.fitness.ObjectiveFunction;
-import es.uma.lcc.caesium.ea.operator.variation.mutation.MutationOperator;
 import es.uma.lcc.caesium.ea.operator.variation.mutation.continuous.GaussianMutation;
 import es.uma.lcc.caesium.ea.util.EAUtil;
 import es.uma.lcc.caesium.pedestrian.evacuation.optimization.ea.PerimetralExitOptimizationFunction;
@@ -19,11 +18,7 @@ import es.uma.lcc.caesium.pedestrian.evacuation.optimization.ea.PerimetralExitOp
  * @version 1.0
  *
  */
-public class EvacuationProblemGreedyMutation extends MutationOperator {
-	/**
-	 * Internal mutation operator
-	 */
-	private GaussianMutation op; 
+public class EvacuationProblemGreedyMutation extends GaussianMutation {
 	/**
 	 * probability of applying the greedy mutation
 	 */
@@ -37,25 +32,20 @@ public class EvacuationProblemGreedyMutation extends MutationOperator {
 	 */
 	private int numExitsMutated;
 	/**
-	 * equivalent cost in evaluation calls of an application of the greedy initialization
+	 * equivalent cost in evaluation calls of an application of the greedy mutation
 	 */
 	private double extra;
 
 	
 	/**
 	 * Creates the operator. 
-	 * @param pars parameters: application probability, the probability of applying the greedy mutation, the number of exits to mutate, gaussian mutation parameters
+	 * @param pars parameters: application probability, Gaussian mutation parameters (amplitude and wrapping), the probability of applying the greedy mutation, the number of exits to mutate
 	 */
 	public EvacuationProblemGreedyMutation(List<String> pars) {
 		super(pars);
-		greedyProb = Double.parseDouble(pars.get(1));
-		numExitsMutated = Integer.parseInt(pars.get(2));
+		greedyProb = Double.parseDouble(pars.get(3));
+		numExitsMutated = Integer.parseInt(pars.get(4));
 		gpep = null;
-		var params = new ArrayList<String>();
-		params.add("1.0"); 			// if we decide not to use greedy mutation, we always use the Gaussian mutation
-		params.add(pars.get(3));	// amplitude of the mutation
-		params.add("true");			// wrap around the min/max limits
-		op = new GaussianMutation(params);
 		extra = 0.0;
 	}
 	
@@ -65,7 +55,6 @@ public class EvacuationProblemGreedyMutation extends MutationOperator {
 	 */
 	public void setObjectiveFunction (ObjectiveFunction obj) {
 		super.setObjectiveFunction(obj);
-		op.setObjectiveFunction(obj);
 		PerimetralExitOptimizationFunction peof = (PerimetralExitOptimizationFunction)obj;
 		gpep = new GreedyPerimetralExitPlacement(peof.getExitEvacuationProblem());
 		gpep.setVerbosityLevel(0);
@@ -92,16 +81,16 @@ public class EvacuationProblemGreedyMutation extends MutationOperator {
 			obj.addExtraCost(num*extra - 1.0);  // deducts 1.0 because the solution is technically evaluated
 			ind.touch();
 		}
-		else 
-			ind = op.apply(parents);
-				
+		else  {
+			ind = super._apply(parents);
+		}
 		return ind;
 	}
 
 	
 	@Override
 	public String toString() {
-		return "GreedyExitPlacement";
+		return "GreedyExitMutation(" + super.toString() + ", " + greedyProb + ", " + numExitsMutated + ")";
 	}
 	
 

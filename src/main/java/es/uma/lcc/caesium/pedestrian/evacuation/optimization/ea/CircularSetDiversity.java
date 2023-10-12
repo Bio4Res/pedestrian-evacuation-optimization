@@ -32,8 +32,11 @@ public class CircularSetDiversity implements DiversityMeasure {
 	
 	@Override
 	public double apply(List<Individual> pop) {
-		int n = pop.get(0).getGenome().length();
 		int mu = pop.size();
+		if (mu < 2)
+			return 0.0;
+		
+		int n = pop.get(0).getGenome().length();		
 		double[][] matrix = new double[mu][n];
 		
 		for (int i=0; i<mu; i++) {
