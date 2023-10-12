@@ -14,7 +14,7 @@ import es.uma.lcc.caesium.pedestrian.evacuation.optimization.ea.PerimetralExitOp
  * Constructs a greedy solution with some probability. Otherwise,
  * a purely random solution is created
  * @author ccottap
- * @version 1.0
+ * @version 1.1
  *
  */
 public class EvacuationProblemGreedyInitialization extends RandomVector {

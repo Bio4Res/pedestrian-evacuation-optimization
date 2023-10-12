@@ -15,7 +15,7 @@ import es.uma.lcc.caesium.pedestrian.evacuation.optimization.ea.PerimetralExitOp
  * greedy procedure picks k exits (k being a parameter) and replaces them 
  * greedily. Alternatively, a standard Gaussian mutation is used.
  * @author ccottap
- * @version 1.0
+ * @version 1.1
  *
  */
 public class EvacuationProblemGreedyMutation extends GaussianMutation {
