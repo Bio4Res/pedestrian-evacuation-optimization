@@ -112,7 +112,7 @@ public class Double2AccessDecoder {
 	 * Return a list of accesses corresponding to a location along the perimeter (they can 
 	 * be more than one because the access may run across a corner, and this would be considered as
 	 * two adjacent accesses).
-	 * @param location the base location (a value between 0 and perimeterLength-exitWidth)
+	 * @param location the base location (a value between 0 and perimeterLength)
 	 * @param label a number to use in the access name
 	 * @param baseID the id to give to the access (sequentially incremented if there are more than one).
 	 * @return a list with the corresponding accesses.

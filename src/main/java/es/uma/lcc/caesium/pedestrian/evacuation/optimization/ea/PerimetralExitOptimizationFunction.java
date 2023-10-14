@@ -10,7 +10,6 @@ import es.uma.lcc.caesium.ea.fitness.ContinuousObjectiveFunction;
 import es.uma.lcc.caesium.ea.fitness.OptimizationSense;
 import es.uma.lcc.caesium.pedestrian.evacuation.optimization.Double2AccessDecoder;
 import es.uma.lcc.caesium.pedestrian.evacuation.optimization.ExitEvacuationProblem;
-import es.uma.lcc.caesium.pedestrian.evacuation.optimization.SimulationSummary;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Access;
 
 
@@ -75,6 +74,16 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 
 	@Override
 	protected double _evaluate(Individual ind) {
+		return eep.fitness (eep.simulate (decode (ind)));
+	}
+	
+	
+	/**
+	 * Decodes an individual, transforming each gene into the corresponding access(es).
+	 * @param ind an individual
+	 * @return the list f accesses encoded in the individual's genome.
+	 */
+	public List<Access> decode (Individual ind) {
 		List<Access> exits = new ArrayList<>(numExits);
 		Genotype g = ind.getGenome();
 		var id = 0;
@@ -83,9 +92,7 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 			exits.addAll(decoder.decodeAccess(location, exit, id));
 			id = exits.size();
 		}
-		// simulate
-		SimulationSummary summary = eep.simulate(exits);
-		return eep.fitness (summary);
+		return exits;
 	}
 	
 }

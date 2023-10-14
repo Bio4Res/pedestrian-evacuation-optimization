@@ -2,6 +2,7 @@ package es.uma.lcc.caesium.pedestrian.evacuation.optimization;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -219,25 +220,34 @@ public class ExitEvacuationProblem {
 		return diameter;
 	}
 
+	
 	/**
 	 * Simulates the evacuation given the list of exits are added
-	 * to the environment.
+	 * to the environment. It uses the number of simulations indicated
+	 * by the simulation configuration.
 	 * @param accesses list of exits to be added to the environment
 	 * @return a summary of the simulation(s) performed
 	 */
-	public SimulationSummary simulate (List<Access> accesses) {
+	public List<SimulationSummary> simulate (List<Access> accesses) {
+		return simulate(accesses, numSimulations);
+	}
+	
+	/**
+	 * Simulates the evacuation given the list of exits are added
+	 * to the environment, and return a list with the outcome of each simulation.
+	 * @param accesses list of exits to be added to the environment
+	 * @param simulations number of simulations to perform
+	 * @return summaries of the simulations performed
+	 */
+	public List<SimulationSummary> simulate (List<Access> accesses, int simulations) {
 		var domainAccesses = domain.getAccesses();
 		domainAccesses.addAll(accesses);
 
-		// simulation metrics
-		double nonEvacuees = 0.0;
-		double minDistance = 0.0;
-		double meanDistance = 0.0;
-		double maxTime = 0.0;
-		double meanTime = 0.0;
-		double worseFitness = Double.NEGATIVE_INFINITY;
+		// simulation results
+		List<SimulationSummary> summaries = new ArrayList<SimulationSummary>(simulations);
+		
 
-		// simulate
+		// simulate ----------------------------------
 
 		// create common scenario for all simulations
 		Scenario scenario = new Scenario.FromDomainBuilder(domain)
@@ -258,7 +268,7 @@ public class ExitEvacuationProblem {
 		// set a seed dependent on the solution for reproducibility
 		es.uma.lcc.caesium.statistics.Random.random.setSeed(accesses.hashCode());
 		// run numSimulations independent simulations
-		for(int i = 0; i < numSimulations; i++) {
+		for(int i = 0; i < simulations; i++) {
 			// reset automaton for this simulation
 			automaton.reset();
 
@@ -285,46 +295,21 @@ public class ExitEvacuationProblem {
 			if (f > 0) {
 				var distances = automaton.distancesToClosestExit();
 				curMinDist = minimum(distances);
-				curMeanDist = mean(distances) * f;
+				curMeanDist = mean(distances);
 			}
 			else {
 				var times = automaton.evacuationTimes();
 				curMaxTime = maximum(times);
 				curMeanTime = mean(times);
 			}
-			double curFitness = fitness (new SimulationSummary(f, curMinDist, curMeanDist, curMaxTime, curMeanTime));
-			if (curFitness > worseFitness) { // the worst-case is kept
-				nonEvacuees = f;
-				minDistance = curMinDist;
-				meanDistance = curMeanDist;
-				maxTime = curMaxTime;
-				meanTime = curMeanTime;
-				worseFitness = curFitness;
-			}
-			
-//			if (f > 0) {
-//				nonEvacuees += f;
-//				var distances = automaton.distancesToClosestExit();
-//				minDistance += minimum(distances);
-//				meanDistance += mean(distances) * f;
-//			} else {
-//				var times = automaton.evacuationTimes();
-//				maxTime += maximum(times);
-//				meanTime += mean(times);
-//			}
+			// add simulation results
+			summaries.add(new SimulationSummary(f, curMinDist, curMeanDist, curMaxTime, curMeanTime));
 		}
 
 		domainAccesses.clear();
 		domainAccesses.addAll(fixedAccesses);
 		
-// 		average results after all simulations
-//		meanDistance /= nonEvacuees;
-//		nonEvacuees /= numSimulations;
-//		minDistance /= numSimulations;
-//		maxTime /= numSimulations;
-//		meanTime /= numSimulations;
-
-		return new SimulationSummary(nonEvacuees, minDistance, meanDistance, maxTime, meanTime);
+		return summaries;
 	}
 
 	/**
@@ -338,6 +323,21 @@ public class ExitEvacuationProblem {
 			f += summary.minDistance() / diameter + summary.meanDistance() / Math.pow(diameter, 2);
 		} else {
 			f += summary.maxTime() / timeLimit + summary.meanTime() / Math.pow(timeLimit, 2);
+		}
+		return f;
+	}
+	
+	
+	/**
+	 * Computes fitness given a collection of simulation results.
+	 * It returns the worst-case result obtained.
+	 * @param summaries collection of summaries of the simulation results
+	 * @return a numeric value (to be minimized) representing the goodness of the simulation results.
+	 */
+	public double fitness(Collection<SimulationSummary> summaries) {
+		double f = 0.0;
+		for (SimulationSummary s: summaries) {
+			f = Math.max(f, fitness(s));
 		}
 		return f;
 	}
