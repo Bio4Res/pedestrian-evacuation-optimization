@@ -30,7 +30,11 @@ public class RunHybridExitPlacement {
 	/**
 	 * stats filename prefix
 	 */
-	private static final String STATS_FILENAME = "hybrid-stats-";
+	private static final String STATS_FILENAME = "-stats-";
+	/**
+	 * solution simulation filename prefix
+	 */
+	private static final String SIMULATIONS_FILENAME = "-simulations-";
 	
 	
 	
@@ -46,14 +50,16 @@ public class RunHybridExitPlacement {
 
 		EAConfiguration conf;
 		if (args.length < 4) {
-			System.out.println ("Required parameters: <greedy-configuration-file> <environment-name> <num-exits> <simulation-configuration>");
-			System.out.println ("\nNote that the environment configuration file will be sought as " + ENVIRONMENT_FILENAME + "<environment-name>.json,");
-			System.out.println ("and the statistics will be dumped to a file named " + STATS_FILENAME + "<environment-name>.json");
+			System.out.println ("Required parameters: <configuration-name> <environment-name> <num-exits> <simulation-configuration>");
+			System.out.println ("\nNote that: ");
+			System.out.println ("\t- the EA configuration file will be sought as <configuration-name>.json,");
+			System.out.println ("\t- the environment configuration file will be sought as " + ENVIRONMENT_FILENAME + "<environment-name>.json,");
+			System.out.println ("\t- the statistics will be dumped to a file named <configuration-name>" + STATS_FILENAME + "<environment-name>.json");
 			System.exit(1);
 		}
 		
 		// Configure the EA
-		FileReader reader = new FileReader(args[0]);
+		FileReader reader = new FileReader(args[0] + ".json");
 		conf = new EAConfiguration((JsonObject) Jsoner.deserialize(reader));
 		int numruns = conf.getNumRuns();
 		long firstSeed = conf.getSeed();
@@ -67,7 +73,8 @@ public class RunHybridExitPlacement {
 		SimulationConfiguration simulationConf = SimulationConfiguration.fromFile(args[3]);
 	    int numExits = Integer.parseInt(args[2]);
 	    ExitEvacuationProblem eep = new ExitEvacuationProblem (environment, numExits, simulationConf);
-		myEA.setObjectiveFunction(new PerimetralExitOptimizationFunction(eep));
+	    PerimetralExitOptimizationFunction peof = new PerimetralExitOptimizationFunction(eep);
+		myEA.setObjectiveFunction(peof);
 		myEA.getStatistics().setDiversityMeasure(new CircularSetDiversity(1.0));
 		System.out.println(eep);
 		
@@ -78,8 +85,25 @@ public class RunHybridExitPlacement {
 								String.format("%.2f", myEA.getStatistics().getTime(i)) + "s\t" +
 								myEA.getStatistics().getBest(i).getFitness());
 		}
-		PrintWriter file = new PrintWriter(STATS_FILENAME + args[1] + ".json");
+		PrintWriter file = new PrintWriter(args[0] + STATS_FILENAME + args[1] + ".json");
 		file.print(myEA.getStatistics().toJSON().toJson());
 		file.close();
+		
+		// Analyze the best solutions more in depth
+		PrintWriter solsim = new PrintWriter(args[0] + SIMULATIONS_FILENAME + args[1] + ".csv");
+		final int NUMSIMS = 1000;
+		solsim.print("run");
+		for (int j=0; j<NUMSIMS; j++)
+			solsim.print(",sim" + j);
+		solsim.println();
+		for (int i=0; i<numruns; i++) {
+			solsim.print(i);
+			var summaries = eep.simulate(peof.decode(myEA.getStatistics().getBest(i)), NUMSIMS); 
+			for (int j=0; j<NUMSIMS; j++)
+				solsim.print("," + eep.fitness(summaries.get(j)));
+			solsim.println();
+		}
+		solsim.close();
+		
 	}
 }
