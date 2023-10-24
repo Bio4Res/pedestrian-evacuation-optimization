@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Access;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Domain;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Shape;
 
 /**
@@ -41,7 +42,22 @@ public class Double2AccessDecoder {
 		height = eep.getHeight();
 	}
 
-	
+	private Double2AccessDecoder(double width, double height, double exitWidth) {
+		this.width = width;
+		this.height = height;
+		this.perimeterLength = 2*(width + height);
+		this.exitWidth = exitWidth;
+	}
+
+	/**
+	 * Returns a decoder for the given domain
+	 * @param domain the domain
+	 * @param exitWidth the width of the exits
+	 * @return a decoder for the given domain
+	 */
+	public static Double2AccessDecoder forDomain(Domain domain, double exitWidth) {
+		return new Double2AccessDecoder(domain.getWidth(), domain.getHeight(), exitWidth);
+	}
 
 	/*                                                       <---
 	                                           right             |
@@ -68,7 +84,7 @@ public class Double2AccessDecoder {
 	 * @param location  location across boundaries of domain.
 	 * @return a list of rectangles corresponding to segments of such exit.
 	 */
-	private List<Shape.Rectangle> locationToRectangles(double location) {
+	public List<Shape.Rectangle> locationToRectangles(double location) {
 		var exitHeight = 0.1; // an exit is going to be represented as a rectangle. This is its height
 		var remainingExitLength = exitWidth;
 		List<Shape.Rectangle> rectangles = new LinkedList<>();
