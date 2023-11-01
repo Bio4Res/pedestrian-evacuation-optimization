@@ -1,4 +1,4 @@
-package es.uma.lcc.caesium.pedestrian.evacuation.environment;
+package es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment;
 
 import es.uma.lcc.caesium.pedestrian.evacuation.optimization.Double2AccessDecoder;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.CellularAutomaton;
@@ -8,7 +8,6 @@ import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.aut
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.pedestrian.PedestrianParameters;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.scenario.Scenario;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.geometry._2d.Rectangle;
-import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.*;
 
 import java.awt.geom.Area;
 import java.util.ArrayList;

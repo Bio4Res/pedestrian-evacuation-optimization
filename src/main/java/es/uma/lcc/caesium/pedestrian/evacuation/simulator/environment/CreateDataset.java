@@ -1,4 +1,4 @@
-package es.uma.lcc.caesium.pedestrian.evacuation.environment;
+package es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment;
 
 import java.awt.geom.Rectangle2D;
 import java.io.FileNotFoundException;
@@ -15,8 +15,7 @@ import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 
 import es.uma.lcc.caesium.ea.util.JsonUtil;
-import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Domain;
-import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Obstacle;
+
 
 /**
  * Class for generating a random dataset of instances

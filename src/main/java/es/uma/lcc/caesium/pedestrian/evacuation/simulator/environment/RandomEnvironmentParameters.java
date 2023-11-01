@@ -1,4 +1,4 @@
-package es.uma.lcc.caesium.pedestrian.evacuation.environment;
+package es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment;
 
 /**
  * Parameters for a random environment with a single domain.
