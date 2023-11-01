@@ -1,0 +1,23 @@
+{
+  "basename": "low-density",
+  "instances": 10,
+  "seed": 1,
+  "width": [
+    40,
+    50
+  ],
+  "height": [
+    20,
+    25
+  ],
+  "cellDimension": 0.5,
+  "accesses": [
+    1,
+    1
+  ],
+  "accessWidth": 2.5,
+  "obstacles": [
+    20,
+    30
+  ]
+}
