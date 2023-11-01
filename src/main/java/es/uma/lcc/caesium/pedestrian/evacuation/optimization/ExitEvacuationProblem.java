@@ -266,9 +266,10 @@ public class ExitEvacuationProblem {
 
 		var automaton = new CellularAutomaton(cellularAutomatonParameters);
 		// set a seed dependent on the solution for reproducibility
-		es.uma.lcc.caesium.statistics.Random.random.setSeed(accesses.hashCode());
+		// es.uma.lcc.caesium.statistics.Random.random.setSeed(accesses.hashCode());
 		// run numSimulations independent simulations
 		for(int i = 0; i < simulations; i++) {
+			es.uma.lcc.caesium.statistics.Random.random.setSeed(i);
 			// reset automaton for this simulation
 			automaton.reset();
 
@@ -337,9 +338,10 @@ public class ExitEvacuationProblem {
 	public double fitness(Collection<SimulationSummary> summaries) {
 		double f = 0.0;
 		for (SimulationSummary s: summaries) {
-			f = Math.max(f, fitness(s));
+			//f = Math.max(f, fitness(s));
+			f += fitness(s);
 		}
-		return f;
+		return f/summaries.size();
 	}
 	
 	@Override
