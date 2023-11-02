@@ -44,9 +44,16 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 	 * cache of fitness evaluations
 	 */
 	private HashMap<TreeSet<Double>, Double> cache;
-
+	/**
+	 * granularity in the location of exits
+	 */
+	private static final double EXIT_PRECISION = 0.1;
+	/**
+	 * used to round off location values
+	 */
+	private static final double FACTOR = 1.0 / EXIT_PRECISION;
 	
-	
+		
 	/**
 	 * Basic constructor
 	 * @param eep the evacuation problem
@@ -102,7 +109,7 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 		TreeSet<Double> genes = new TreeSet<Double>();
 		Genotype g = ind.getGenome();
 		for (int exit=0; exit<numExits; exit++) {
-			genes.add((double)g.getGene(exit));
+			genes.add(roundLocation(g, exit));
 		}
 		return genes;
 	}
@@ -119,11 +126,22 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 		Genotype g = ind.getGenome();
 		var id = 0;
 		for (int exit=0; exit<numExits; exit++) {
-			double location = ((double)g.getGene(exit))*perimeterLength;
+			// locations have a precision of 1cm
+			double location = roundLocation(g, exit);
 			exits.addAll(decoder.decodeAccess(location, exit, id));
 			id = exits.size();
 		}
 		return exits;
+	}
+	
+	/**
+	 * Rounds off the value of a certain exit to the desired precision
+	 * @param g the genotype
+	 * @param index index of the exit
+	 * @return the location along the perimeter (rounded off).
+	 */
+	private double roundLocation (Genotype g, int index) {
+		return Math.round(((double)g.getGene(index)) * perimeterLength * FACTOR)/FACTOR;
 	}
 	
 }
