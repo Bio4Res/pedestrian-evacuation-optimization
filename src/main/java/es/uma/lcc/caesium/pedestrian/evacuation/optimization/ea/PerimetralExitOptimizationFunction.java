@@ -2,7 +2,9 @@ package es.uma.lcc.caesium.pedestrian.evacuation.optimization.ea;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.TreeSet;
 
 import es.uma.lcc.caesium.ea.base.Genotype;
 import es.uma.lcc.caesium.ea.base.Individual;
@@ -38,6 +40,11 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 	 * decoder of accesses
 	 */
 	private Double2AccessDecoder decoder;
+	/**
+	 * cache of fitness evaluations
+	 */
+	private HashMap<TreeSet<Double>, Double> cache;
+
 	
 	
 	/**
@@ -50,6 +57,7 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 		perimeterLength = eep.getPerimeterLength();
 		this.eep = eep;
 		decoder = new Double2AccessDecoder(eep);
+		cache = new HashMap<TreeSet<Double>, Double>();
 	}
 	
 	
@@ -74,10 +82,33 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 
 	@Override
 	protected double _evaluate(Individual ind) {
-		return eep.fitness (eep.simulate (decode (ind)));
+		TreeSet<Double> genes = individualToTreeSet (ind);
+		Double val = cache.get(genes);
+		if (val == null) {
+			val = eep.fitness (eep.simulate (decode (ind)));
+			cache.put(genes, val);
+		}
+		
+		return val;
 	}
 	
+	/**
+	 * Transforms an individual's genome into a tree set (because genome ordering is irrelevant
+	 * when it comes to compare solutions).
+	 * @param ind an individual
+	 * @return a tree set with the individual's genes
+	 */
+	private TreeSet<Double> individualToTreeSet (Individual ind) {
+		TreeSet<Double> genes = new TreeSet<Double>();
+		Genotype g = ind.getGenome();
+		for (int exit=0; exit<numExits; exit++) {
+			genes.add((double)g.getGene(exit));
+		}
+		return genes;
+	}
 	
+
+
 	/**
 	 * Decodes an individual, transforming each gene into the corresponding access(es).
 	 * @param ind an individual
