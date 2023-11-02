@@ -59,7 +59,7 @@
       <version>3.1.1</version>
       <executions>
         <execution>
-          <id>build-publisher</id>
+          <id>build-ea</id>
           <configuration>
             <appendAssemblyId>false</appendAssemblyId>
             <archive>
@@ -78,7 +78,7 @@
           </goals>
         </execution>
         <execution>
-          <id>build-logReader</id>
+          <id>build-greedy</id>
           <configuration>
             <appendAssemblyId>false</appendAssemblyId>
             <archive>
@@ -90,6 +90,25 @@
               <descriptorRef>jar-with-dependencies</descriptorRef>
             </descriptorRefs>
             <finalName>GREEDY</finalName>
+          </configuration>
+          <phase>package</phase>
+          <goals>
+            <goal>single</goal>
+          </goals>
+        </execution>
+        <execution>
+          <id>build-iea</id>
+          <configuration>
+            <appendAssemblyId>false</appendAssemblyId>
+            <archive>
+              <manifest>
+                <mainClass>es.uma.lcc.caesium.pedestrian.evacuation.optimization.hybrid.RunHybridExitPlacement</mainClass>
+              </manifest>
+            </archive>
+            <descriptorRefs>
+              <descriptorRef>jar-with-dependencies</descriptorRef>
+            </descriptorRefs>
+            <finalName>IEA</finalName>
           </configuration>
           <phase>package</phase>
           <goals>
