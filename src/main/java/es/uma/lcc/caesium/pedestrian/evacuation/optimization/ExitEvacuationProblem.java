@@ -55,6 +55,10 @@ public class ExitEvacuationProblem {
 	 */
 	private final double diameter;
 	/**
+	 * square of the diameter of domain
+	 */
+	private final double diameter2;
+	/**
 	 * width of exits
 	 */
 	private double exitWidth;
@@ -78,6 +82,10 @@ public class ExitEvacuationProblem {
 	 * the time limit for simulation
 	 */
 	private final double timeLimit;
+	/**
+	 * square of the time limit for simulation
+	 */
+	private final double timeLimit2;
 
 	/**
 	 * the type of static floor field to use
@@ -116,9 +124,11 @@ public class ExitEvacuationProblem {
 		setExitWidth(width);
 		domain = environment.getDomain(1); // assume a single domain
 		perimeterLength = 2*(domain.getHeight()+domain.getWidth());
-		diameter = Math.sqrt(Math.pow(domain.getHeight(), 2) + Math.pow(domain.getWidth(), 2));
+		diameter2 = Math.pow(domain.getHeight(), 2) + Math.pow(domain.getWidth(), 2);
+		diameter = Math.sqrt(diameter2);
 		fixedAccesses = new ArrayList<>(this.environment.getDomain(1).getAccesses());
 		timeLimit = simulationConf.getDouble("timeLimit");
+		timeLimit2 = timeLimit * timeLimit;
 		numSimulations = simulationConf.getInt("numSimulations");
 		cellDimension = simulationConf.getDouble("cellularAutomatonParameters/cellDimension");
 		pedestrianReferenceVelocity = simulationConf.getDouble("crowd/pedestrianReferenceVelocity");
@@ -276,9 +286,9 @@ public class ExitEvacuationProblem {
 			// place pedestrians for this simulation
 			Supplier<PedestrianParameters> pedestrianParametersSupplier = () ->
 					new PedestrianParameters.Builder()
-							.fieldAttractionBias(random.nextDouble(attractionBiasMin, attractionBiasMax))
-							.crowdRepulsion(random.nextDouble(crowdRepulsionMin, crowdRepulsionMax))
-							.velocityPercent(random.nextDouble(velocityFactorMin, velocityFactorMax))
+							.fieldAttractionBias(sample(attractionBiasMin, attractionBiasMax))
+							.crowdRepulsion(sample(crowdRepulsionMin, crowdRepulsionMax))
+							.velocityPercent(sample(velocityFactorMin, velocityFactorMax))
 							.build();
 
 			var numberOfPedestrians = random.nextInt(numPedestriansMin, numPedestriansMax + 1);
@@ -312,6 +322,20 @@ public class ExitEvacuationProblem {
 		
 		return summaries;
 	}
+	
+	
+	/**
+	 * Samples a double value from an interval [l, u)
+	 * @param l lower end
+	 * @param u upper end
+	 * @return a double in range [l, u). If l == u, l is returned.
+	 */
+	private double sample (double l, double u) {
+		if (l == u)
+			return l;
+		else
+			return random.nextDouble(l, u);
+	}
 
 	/**
 	 * Computes fitness given the results of the simulation(s)
@@ -321,9 +345,9 @@ public class ExitEvacuationProblem {
 	public double fitness(SimulationSummary summary) {
 		double f = summary.nonEvacuees();
 		if (f > 0) {
-			f += summary.minDistance() / diameter + summary.meanDistance() / Math.pow(diameter, 2);
+			f += summary.minDistance() / diameter + summary.meanDistance() / diameter2;
 		} else {
-			f += summary.maxTime() / timeLimit + summary.meanTime() / Math.pow(timeLimit, 2);
+			f += summary.maxTime() / timeLimit + summary.meanTime() / timeLimit2;
 		}
 		return f;
 	}

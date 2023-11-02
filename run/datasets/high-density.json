@@ -1,6 +1,6 @@
 {
   "basename": "high-density",
-  "instances": 10,
+  "instances": 5,
   "seed": 1,
   "width": [
     40,
@@ -8,7 +8,7 @@
   ],
   "height": [
     20,
-    25
+    30
   ],
   "cellDimension": 0.5,
   "accesses": [
@@ -17,7 +17,7 @@
   ],
   "accessWidth": 2.5,
   "obstacles": [
-    80,
-    120
+    100,
+    150
   ]
 }

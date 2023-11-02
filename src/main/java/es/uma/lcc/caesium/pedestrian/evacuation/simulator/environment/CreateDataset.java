@@ -61,11 +61,11 @@ public class CreateDataset {
 			PrintWriter instanceFile = new PrintWriter(basename + "-" + (i+1) + ".json");
 			var parameters = new RandomEnvironmentParameters.Builder()
 			        .seed(seed + i) // use this seed
-			        .width(sampleDouble(widthRange)) // width of the domain
-			        .height(sampleDouble(heightRange)) // height of the domain
+			        .width(round(sample(widthRange.get(0), widthRange.get(1)), cellDimension)) // width of the domain
+			        .height(round(sample(heightRange.get(0), heightRange.get(1)), cellDimension)) // height of the domain
 			        .cellDimension(cellDimension) // dimension of the cells (assumed to be square)
-			        .numberOfObstacles(sampleInteger(numberOfObstacles)) // tentative number of obstacles to try to place in the domain
-			        .numberOfAccesses(sampleInteger(numberOfAccesses)) // tentative number of accesses to try to place in the perimeter of the domain
+			        .numberOfObstacles(sample(numberOfObstacles.get(0), numberOfObstacles.get(1))) // tentative number of obstacles to try to place in the domain
+			        .numberOfAccesses(sample(numberOfAccesses.get(0), numberOfAccesses.get(1))) // tentative number of accesses to try to place in the perimeter of the domain
 			        .accessesWidth(accessWidth) // width of each of access
 			        .build();
 
@@ -126,13 +126,22 @@ public class CreateDataset {
 	}
 	
 	/**
-	 * Samples a double value from an interval 
-	 * @param interval the interval [L, U)
-	 * @return a double in range [L, U). If L == U, L is returned.
+	 * Rounds a double value to the nearest multiple of the precision value
+	 * @param val a double value
+	 * @param precision a precision value
+	 * @return the rounded-off value
 	 */
-	private static double sampleDouble (List<Double> interval) {
-		double l = interval.get(0);
-		double u = interval.get(1);
+	private static double round (double val, double precision) {
+		return Math.round(val/precision) * precision;
+	}
+	
+	/**
+	 * Samples a double value from an interval [l, u)
+	 * @param l lower end
+	 * @param u upper end
+	 * @return a double in range [l, u). If l == u, l is returned.
+	 */
+	private static double sample (double l, double u) {
 		if (l == u)
 			return l;
 		else
@@ -140,17 +149,13 @@ public class CreateDataset {
 	}
 	
 	/**
-	 * Samples an integer value from an interval 
-	 * @param interval the interval [L, U)
-	 * @return a double in range [L, U). If L == U, L is returned.
+	 * Samples an integer value from the set {l...u}
+	 * @param l lower end
+	 * @param u upper end
+	 * @return an integer in range {l...u}. 
 	 */
-	private static int sampleInteger (List<Integer> interval) {
-		int l = interval.get(0);
-		int u = interval.get(1);
-		if (l == u)
-			return l;
-		else
-			return rng.nextInt(l, u);
+	private static int sample (int l, int u) {
+		return rng.nextInt(l, u + 1);
 	}
 	
 

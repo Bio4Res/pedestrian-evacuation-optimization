@@ -1,6 +1,6 @@
 {
   "basename": "low-density",
-  "instances": 10,
+  "instances": 5,
   "seed": 1,
   "width": [
     40,
