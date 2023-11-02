@@ -1,5 +1,28 @@
 {
-    "numruns" : 5,
+    "numruns" : 20,
     "seed" : 1,
-    "maxevals" : 20000
+    "islands" : [
+        {
+            "numislands" : 1,
+            "popsize" : 1,
+            "offspring" : 1,
+            "maxevals" : 20000,
+            "initialization" : {
+                "name": "greedyinitialization",
+                "parameters" : ["1.0"]
+            },
+            "selection" : {
+                "name" : "best"
+            },
+            "variation" : [
+                {
+                    "name" : "greedymutation",
+                    "parameters" : ["1.0", "1.0", "true", "1.0", "0"]
+                }
+            ],
+            "replacement" : {
+                "name" : "plus"
+            }
+        }
+    ]
 }
