@@ -90,7 +90,7 @@ public class RunHybridExitPlacement {
 		file.close();
 		
 		// Analyze the best solutions more in depth
-		PrintWriter solsim = new PrintWriter(args[0] + SIMULATIONS_FILENAME + args[1] + ".csv");
+		PrintWriter solsim = new PrintWriter(args[0] + SIMULATIONS_FILENAME + args[1] + "-" + args[2] + ".csv");
 		final int NUMSIMS = 1000;
 		solsim.print("run");
 		for (int j=0; j<NUMSIMS; j++)
