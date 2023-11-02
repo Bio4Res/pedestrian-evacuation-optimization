@@ -54,10 +54,10 @@ public class RunHybridExitPlacement {
 			System.out.println ("\nNote that: ");
 			System.out.println ("\t- the EA configuration file will be sought as <configuration-name>.json,");
 			System.out.println ("\t- the environment configuration file will be sought as " + ENVIRONMENT_FILENAME + "<environment-name>.json,");
-			System.out.println ("\t- the statistics will be dumped to a file named <configuration-name>" + STATS_FILENAME + "<environment-name>.json");
+			System.out.println ("\t- the statistics will be dumped to a file named <configuration-name>" + STATS_FILENAME + "<environment-name>-<num-exits>.json");
 			System.exit(1);
 		}
-		
+				
 		// Configure the EA
 		FileReader reader = new FileReader(args[0] + ".json");
 		conf = new EAConfiguration((JsonObject) Jsoner.deserialize(reader));
@@ -85,7 +85,7 @@ public class RunHybridExitPlacement {
 								String.format("%.2f", myEA.getStatistics().getTime(i)) + "s\t" +
 								myEA.getStatistics().getBest(i).getFitness());
 		}
-		PrintWriter file = new PrintWriter(args[0] + STATS_FILENAME + args[1] + ".json");
+		PrintWriter file = new PrintWriter(args[0] + STATS_FILENAME + args[1] + "-" + args[2] + ".json");
 		file.print(myEA.getStatistics().toJSON().toJson());
 		file.close();
 		
