@@ -64,6 +64,12 @@ public class PerimetralExitOptimizationFunction extends ContinuousObjectiveFunct
 		perimeterLength = eep.getPerimeterLength();
 		this.eep = eep;
 		decoder = new Double2AccessDecoder(eep);
+		cache = null;
+	}
+	
+	@Override
+	public void newRun() {
+		super.newRun();
 		cache = new HashMap<TreeSet<Double>, Double>();
 	}
 	
