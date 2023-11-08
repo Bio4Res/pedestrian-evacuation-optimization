@@ -22,6 +22,8 @@ import es.uma.lcc.caesium.pedestrian.evacuation.simulator.configuration.Simulati
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Access;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Domain;
 import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Environment;
+import es.uma.lcc.caesium.statistics.Descriptive;
+
 import static es.uma.lcc.caesium.statistics.Descriptive.*;
 import static es.uma.lcc.caesium.statistics.Random.random;
 
@@ -360,12 +362,17 @@ public class ExitEvacuationProblem {
 	 * @return a numeric value (to be minimized) representing the goodness of the simulation results.
 	 */
 	public double fitness(Collection<SimulationSummary> summaries) {
-		double f = 0.0;
+		//double f = 0.0;
+		double[] fitnesses = new double[summaries.size()];
+		int i = 0;
 		for (SimulationSummary s: summaries) {
 			//f = Math.max(f, fitness(s));
-			f += fitness(s);
+			//f += fitness(s);
+			fitnesses[i++] = fitness(s);
 		}
-		return f/summaries.size();
+
+		return Descriptive.median(fitnesses);
+		//return f/summaries.size();
 	}
 	
 	@Override
