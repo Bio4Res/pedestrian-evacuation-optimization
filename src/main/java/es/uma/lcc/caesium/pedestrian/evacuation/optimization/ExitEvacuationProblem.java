@@ -357,22 +357,18 @@ public class ExitEvacuationProblem {
 	
 	/**
 	 * Computes fitness given a collection of simulation results.
-	 * It returns the worst-case result obtained.
+	 * It returns the mean of the results.
 	 * @param summaries collection of summaries of the simulation results
 	 * @return a numeric value (to be minimized) representing the goodness of the simulation results.
 	 */
 	public double fitness(Collection<SimulationSummary> summaries) {
-		//double f = 0.0;
 		double[] fitnesses = new double[summaries.size()];
 		int i = 0;
 		for (SimulationSummary s: summaries) {
-			//f = Math.max(f, fitness(s));
-			//f += fitness(s);
 			fitnesses[i++] = fitness(s);
 		}
 
-		return Descriptive.median(fitnesses);
-		//return f/summaries.size();
+		return Descriptive.mean(fitnesses);
 	}
 	
 	@Override
