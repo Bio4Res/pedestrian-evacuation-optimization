@@ -15,3 +15,7 @@ This project has the following dependencies:
 * [statistics](https://github.com/Bio4Res/statistics): library with basic descriptive statistics
 
 Maven users: these dependencies are already included in the <code>pom.xml</code> file 
+
+## References
+
+1. Carlos Cotta, José E. Gallardo, "Evolutionary Algorithms for Optimizing Emergency Exit Placement in Indoor Environments", _Applications of Evolutionary Computation – 27th International Conference, EvoApplications 2024_, Stephen Smith, João Correia and Christian Cintrano (eds.), Lecture Notes in Computer Science, Springer, Berlin, 2024 
