@@ -6,7 +6,7 @@
             "numislands" : 1,
             "popsize" : 100,
             "offspring" : 99,
-            "maxevals" : 25000,
+            "maxevals" : 20000,
             "initialization" : {
                 "name": "randomvector"
             },
@@ -21,7 +21,7 @@
                 },
                 {
                     "name" : "gaussian",
-                    "parameters" : ["0.6321", "1", "true"]
+                    "parameters" : ["0.6321", "0.05", "true"]
                 }
             ],
             "replacement" : {

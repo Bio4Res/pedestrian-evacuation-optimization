@@ -1,5 +1,5 @@
 {
-	"numSimulations" : 5,
+	"numSimulations" : 20,
     "simulator": {
         "timeLimit": 60,
         "simulatorType" : "CA",
