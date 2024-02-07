@@ -16,7 +16,7 @@ import es.uma.lcc.caesium.ea.util.JsonUtil;
 /**
  * Configuration of the simulation
  * @author ccottap
- * @version 1.0
+ * @version 1.1
  */
 public class SimulationConfiguration {
 	/**
@@ -49,6 +49,15 @@ public class SimulationConfiguration {
 	 */
 	public String getString(String key) {
 		return parameters.get(key);
+	}
+	
+	/**
+	 * Sets the value of a configuration property
+	 * @param key name of the property
+	 * @param value value of the property
+	 */
+	public void putValue(String key, String value) {
+		parameters.put(key, value);
 	}
 	
 	/** 
