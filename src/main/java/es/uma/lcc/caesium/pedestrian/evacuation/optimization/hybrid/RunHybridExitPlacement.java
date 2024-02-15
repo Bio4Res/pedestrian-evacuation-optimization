@@ -66,7 +66,7 @@ public class RunHybridExitPlacement {
 		conf.setVariationFactory(new HybridVariationFactory());
 		System.out.println(conf);
 		EvolutionaryAlgorithm myEA = new EvolutionaryAlgorithm(conf);
-		myEA.setVerbosityLevel(1);
+		myEA.setVerbosityLevel(0);
 		
 		// Configure the problem
 	    Environment environment = Environment.fromFile(ENVIRONMENT_FILENAME + args[1] + ".json");
@@ -76,7 +76,8 @@ public class RunHybridExitPlacement {
 	    PerimetralExitOptimizationFunction peof = new PerimetralExitOptimizationFunction(eep);
 		myEA.setObjectiveFunction(peof);
 		myEA.getStatistics().setDiversityMeasure(new CircularSetDiversity(1.0));
-		System.out.println(eep);
+		//System.out.println(eep);
+		System.out.println(simulationConf);
 		
 		for (int i=0; i<numruns; i++) {
 			long seed = firstSeed + i;

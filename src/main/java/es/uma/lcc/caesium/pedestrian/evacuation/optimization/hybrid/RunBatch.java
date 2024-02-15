@@ -10,9 +10,19 @@ import com.github.cliftonlabs.json_simple.Jsoner;
 
 import es.uma.lcc.caesium.ea.util.JsonUtil;
 
+/**
+ * Runs experiments in batch
+ * @author ccottap
+ * @version 1.1
+ */
 public class RunBatch {
 
-
+	/**
+	 * Main method to run experiments in batch
+	 * @param args commnad-line arguments: name of the batch file
+	 * @throws FileNotFoundException if file cannot be read
+	 * @throws JsonException if file not properly formatted
+	 */
 	public static void main(String[] args) throws FileNotFoundException, JsonException {
 		if (args.length < 1) {
 			System.out.println("Missing parameters. Required: <batch-conf>");
@@ -33,8 +43,12 @@ public class RunBatch {
 			JsonObject exp = (JsonObject)o;
 			String environment = (String) exp.get("basename");
 			int num = JsonUtil.getInt(exp, "num");
+			int first = 1;
+			if (exp.containsKey("start")) {
+				first = JsonUtil.getInt(exp, "start");
+			}
 
-			for (int i=1; i<=num; i++) {
+			for (int i=first; i<=num; i++) {
 				params[1] = environment + "-" + String.valueOf(i);
 				System.out.println("--------------------------------------------------------------------------------");
 				System.out.println("Running " + params[0] + " " + params[1] + " " + params[2] + " " + params[3]);
