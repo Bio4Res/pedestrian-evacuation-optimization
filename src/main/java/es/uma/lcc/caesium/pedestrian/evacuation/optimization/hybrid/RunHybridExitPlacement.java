@@ -76,7 +76,7 @@ public class RunHybridExitPlacement {
 	    PerimetralExitOptimizationFunction peof = new PerimetralExitOptimizationFunction(eep);
 		myEA.setObjectiveFunction(peof);
 		myEA.getStatistics().setDiversityMeasure(new CircularSetDiversity(1.0));
-		System.out.println(eep);
+		//System.out.println(eep);
 		
 		for (int i=0; i<numruns; i++) {
 			long seed = firstSeed + i;
