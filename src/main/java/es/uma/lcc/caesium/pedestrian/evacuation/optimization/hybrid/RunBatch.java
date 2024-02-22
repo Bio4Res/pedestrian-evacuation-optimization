@@ -11,16 +11,15 @@ import com.github.cliftonlabs.json_simple.Jsoner;
 import es.uma.lcc.caesium.ea.util.JsonUtil;
 
 /**
- * Class for running experiments in batch using configurations of the hybrid EA
- *
+ * Runs experiments in batch
  * @author ccottap
- * @version 1.0
+ * @version 1.1
  */
 public class RunBatch {
 
 	/**
-	 * Main method
-	 * @param args commnad-line arguments (batch file)
+	 * Main method to run experiments in batch
+	 * @param args commnad-line arguments: name of the batch file
 	 * @throws FileNotFoundException if the file (or any file referenced within it) cannot be found
 	 * @throws JsonException if the file (or any file referenced within it) is not properly formatted
 	 */
@@ -45,8 +44,12 @@ public class RunBatch {
 			JsonObject exp = (JsonObject)o;
 			String environment = (String) exp.get("basename");
 			int num = JsonUtil.getInt(exp, "num");
+			int first = 1;
+			if (exp.containsKey("start")) {
+				first = JsonUtil.getInt(exp, "start");
+			}
 
-			for (int i=1; i<=num; i++) {
+			for (int i=first; i<=num; i++) {
 				params[1] = environment + "-" + String.valueOf(i);
 				System.out.println("--------------------------------------------------------------------------------");
 				System.out.println("Running " + params[0] + " " + params[1] + " " + params[2] + " " + params[3]);
