@@ -1,4 +1,4 @@
-package es.uma.lcc.caesium.pedestrian.evacuation.optimization.neldermead;
+package es.uma.lcc.caesium.pedestrian.evacuation.optimization.dfopt;
 
 import java.util.ArrayList;
 import java.util.List;

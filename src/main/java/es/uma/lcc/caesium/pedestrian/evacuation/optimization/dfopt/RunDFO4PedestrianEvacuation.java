@@ -1,4 +1,4 @@
-package es.uma.lcc.caesium.pedestrian.evacuation.optimization.neldermead;
+package es.uma.lcc.caesium.pedestrian.evacuation.optimization.dfopt;
 
 
 import java.io.FileReader;
@@ -10,7 +10,11 @@ import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 
+import es.uma.lcc.caesium.dfopt.base.DerivativeFreeConfiguration;
+import es.uma.lcc.caesium.dfopt.base.DerivativeFreeMethod;
 import es.uma.lcc.caesium.dfopt.base.IteratedDerivativeFreeMethod;
+import es.uma.lcc.caesium.dfopt.hookejeeves.HookeJeeves;
+import es.uma.lcc.caesium.dfopt.hookejeeves.HookeJeevesConfiguration;
 import es.uma.lcc.caesium.dfopt.neldermead.NelderMead;
 import es.uma.lcc.caesium.dfopt.neldermead.NelderMeadConfiguration;
 import es.uma.lcc.caesium.pedestrian.evacuation.optimization.ExitEvacuationProblem;
@@ -20,11 +24,11 @@ import es.uma.lcc.caesium.pedestrian.evacuation.simulator.environment.Environmen
 
 
 /**
- * Resolution of the pedestrian evacuation problem using Nelder-Mead algorithm
+ * Resolution of the pedestrian evacuation problem using derivative-free algorithms
  * @author ccottap
- * @version 1.0
+ * @version 1.1
  */
-public class RunNM4PedestrianEvacuation {
+public class RunDFO4PedestrianEvacuation {
 	/**
 	 * environment filename prefix
 	 */
@@ -58,11 +62,27 @@ public class RunNM4PedestrianEvacuation {
 			FileReader reader = new FileReader(args[0] + ".json");
 			JsonObject jo = (JsonObject) Jsoner.deserialize(reader);
 			reader.close();
-			NelderMeadConfiguration conf = new NelderMeadConfiguration(jo);
-			NelderMead solver = new NelderMead(conf);
-			IteratedDerivativeFreeMethod myNM = new IteratedDerivativeFreeMethod(conf, solver);
-			myNM.setVerbosityLevel(1);
 			
+			DerivativeFreeConfiguration conf = null;
+			DerivativeFreeMethod solver = null;
+			
+			if (args[0].toLowerCase().contains("neldermead")) {
+				conf = new NelderMeadConfiguration(jo);
+				solver = new NelderMead((NelderMeadConfiguration)conf);
+			}
+			else if (args[0].toLowerCase().contains("hookejeeves")) {
+				conf = new HookeJeevesConfiguration(jo);
+				solver = new HookeJeeves((HookeJeevesConfiguration)conf);
+			}
+			else {
+				System.out.println("Unknown method: " + args[0]);
+				System.exit(1);
+			}
+			
+			System.out.println(conf);
+			
+			IteratedDerivativeFreeMethod myNM = new IteratedDerivativeFreeMethod(conf, solver);
+			myNM.setVerbosityLevel(0);		
 			
 		    Environment environment = Environment.fromFile(ENVIRONMENT_FILENAME + args[1] + ".json");
 			SimulationConfiguration simulationConf = SimulationConfiguration.fromFile(args[3]);

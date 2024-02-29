@@ -1,4 +1,4 @@
-package es.uma.lcc.caesium.pedestrian.evacuation.optimization.neldermead;
+package es.uma.lcc.caesium.pedestrian.evacuation.optimization.dfopt;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -18,7 +18,7 @@ import es.uma.lcc.caesium.ea.util.JsonUtil;
  * @author ccottap
  * @version 1.0
  */
-public class RunBatchNM {
+public class RunBatchDFO {
 
 	/**
 	 * Main method
@@ -46,13 +46,17 @@ public class RunBatchNM {
 			JsonObject exp = (JsonObject)o;
 			String environment = (String) exp.get("basename");
 			int num = JsonUtil.getInt(exp, "num");
+			int first = 1;
+			if (exp.containsKey("start")) {
+				first = JsonUtil.getInt(exp, "start");
+			}
 
-			for (int i=1; i<=num; i++) {
+			for (int i=first; i<=num; i++) {
 				params[1] = environment + "-" + String.valueOf(i);
 				System.out.println("--------------------------------------------------------------------------------");
 				System.out.println("Running " + params[0] + " " + params[1] + " " + params[2] + " " + params[3]);
 				System.out.println("--------------------------------------------------------------------------------");
-				RunNM4PedestrianEvacuation.main(params);
+				RunDFO4PedestrianEvacuation.main(params);
 			}
 
 		}
