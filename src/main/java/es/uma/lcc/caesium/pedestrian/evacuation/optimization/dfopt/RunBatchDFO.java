@@ -13,7 +13,7 @@ import es.uma.lcc.caesium.ea.util.JsonUtil;
 
 
 /**
- * Class for running experiments in batch using configurations of the Nelder-Mead algorithm
+ * Class for running experiments in batch using configurations of the derivative-free methods
  *
  * @author ccottap
  * @version 1.0
