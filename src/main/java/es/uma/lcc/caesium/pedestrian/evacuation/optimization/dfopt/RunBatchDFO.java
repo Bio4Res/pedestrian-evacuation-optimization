@@ -1,7 +1,8 @@
-package es.uma.lcc.caesium.pedestrian.evacuation.optimization.hybrid;
+package es.uma.lcc.caesium.pedestrian.evacuation.optimization.dfopt;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 
 import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonException;
@@ -10,23 +11,24 @@ import com.github.cliftonlabs.json_simple.Jsoner;
 
 import es.uma.lcc.caesium.ea.util.JsonUtil;
 
+
 /**
- * Runs experiments in batch
+ * Class for running experiments in batch using configurations of the derivative-free methods
+ *
  * @author ccottap
- * @version 1.1
+ * @version 1.0
  */
-public class RunBatch {
+public class RunBatchDFO {
 
 	/**
-	 * Main method to run experiments in batch
-	 * @param args commnad-line arguments: name of the batch file
+	 * Main method
+	 * @param args commnad-line arguments (batch file)
 	 * @throws FileNotFoundException if the file (or any file referenced within it) cannot be found
 	 * @throws JsonException if the file (or any file referenced within it) is not properly formatted
 	 */
-	public static void main(String[] args) throws FileNotFoundException, JsonException {
+	public static void main(String[] args) throws JsonException, IOException {
 		if (args.length < 1) {
 			System.out.println("Missing parameters. Required: <batch-conf>");
-			System.exit(1);
 		}
 		// reads batch configuration
 		JsonObject conf = (JsonObject) Jsoner.deserialize(new FileReader(args[0]));
@@ -54,7 +56,7 @@ public class RunBatch {
 				System.out.println("--------------------------------------------------------------------------------");
 				System.out.println("Running " + params[0] + " " + params[1] + " " + params[2] + " " + params[3]);
 				System.out.println("--------------------------------------------------------------------------------");
-				RunHybridExitPlacement.main(params);
+				RunDFO4PedestrianEvacuation.main(params);
 			}
 
 		}

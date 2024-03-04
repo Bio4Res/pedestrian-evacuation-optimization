@@ -8,6 +8,7 @@ Contributors: Carlos Cotta, José E. Gallardo
 
 This project has the following dependencies:
 
+* [derivative-free-optimization](https://github.com/Bio4Res/derivative-free-optimization): optimization with derivative-free methods
 * [ea](https://github.com/Bio4Res/ea): evolutionary algorithm library for optimization
 * [json-simple](https://cliftonlabs.github.io/json-simple/): Library for parsing configuration files and dumping statistics.
 * [pedestrian-evacuation-simulator-cellular-automaton](https://github.com/Bio4Res/pedestrian-evacuation-simulator-cellular-automaton): cellular automaton library for simulating crowd behavior

@@ -53,8 +53,7 @@
     	<artifactId>derivative-free-optimization</artifactId>
     	<version>1.0</version>
     </dependency>
-</dependencies>
-
+  </dependencies>
   <build>
     <finalName>EA</finalName>
     <plugins>
