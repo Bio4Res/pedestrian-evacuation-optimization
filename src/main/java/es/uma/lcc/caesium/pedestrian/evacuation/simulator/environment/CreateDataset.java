@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.function.Supplier;
 
 import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonException;
@@ -15,6 +16,14 @@ import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 
 import es.uma.lcc.caesium.ea.util.JsonUtil;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.CellularAutomaton;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.CellularAutomatonParameters;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.floorField.DijkstraStaticFloorFieldWithMooreNeighbourhood;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.neighbourhood.MooreNeighbourhood;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.pedestrian.PedestrianParameters;
+import es.uma.lcc.caesium.pedestrian.evacuation.simulator.cellular.automaton.automata.scenario.Scenario;
+
+import static es.uma.lcc.caesium.statistics.Random.random;
 
 
 /**
@@ -73,6 +82,36 @@ public class CreateDataset {
 			analyze(datasetStats, environment);
 			instanceFile.println(environment.jsonPrettyPrinted());
 			instanceFile.close();
+
+
+			var scenario = new Scenario.FromDomainBuilder(environment.getDomain(1))
+					.cellDimension(environment.getCellDimension())
+					.floorField(DijkstraStaticFloorFieldWithMooreNeighbourhood::of)
+					.build();
+
+			var cellularAutomatonParameters =
+					new CellularAutomatonParameters.Builder()
+							.scenario(scenario) // use this scenario
+							.timeLimit(10 * 60) // time limit for simulation (in seconds)
+							.neighbourhood(MooreNeighbourhood::of) // use this neighborhood for automaton
+							.pedestrianReferenceVelocity(1.5) // fastest pedestrian speed
+							.GUITimeFactor(10) // perform GUI animation x10 times faster than real time
+							.build();
+
+			var cellularAutomaton = new CellularAutomaton(cellularAutomatonParameters);
+
+			// place pedestrians
+			var numberOfPedestrians = 0*random.nextInt(300, 800);
+			Supplier<PedestrianParameters> pedestrianParametersSupplier = () ->
+					new PedestrianParameters.Builder()
+							.fieldAttractionBias(random.nextDouble(2.0, 4.0))
+							.crowdRepulsion(random.nextDouble(1.00, 1.50))
+							.velocityPercent(random.nextDouble(0.5, 1.0))
+							.build();
+			cellularAutomaton.addPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
+
+			cellularAutomaton.runGUI();
+
 		}
 		datasetStats.close();
 	}

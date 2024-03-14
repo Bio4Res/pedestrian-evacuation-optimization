@@ -2,6 +2,7 @@ package es.uma.lcc.caesium.pedestrian.evacuation.optimization.ea;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Locale;
 
@@ -33,10 +34,10 @@ public class RunEvacuationOptimization {
 	/**
 	 * Main method
 	 * @param args command-line arguments
-	 * @throws FileNotFoundException if configuration file cannot be read 
+	 * @throws IOException if configuration file cannot be read
 	 * @throws JsonException if the configuration file is not correctly formatted
 	 */
-	public static void main(String[] args) throws FileNotFoundException, JsonException {
+	public static void main(String[] args) throws IOException, JsonException {
 		// set US locale
 		Locale.setDefault(Locale.US);
 

@@ -2,6 +2,7 @@ package es.uma.lcc.caesium.pedestrian.evacuation.optimization.hybrid;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 
 import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonException;
@@ -20,10 +21,10 @@ public class RunBatch {
 	/**
 	 * Main method to run experiments in batch
 	 * @param args commnad-line arguments: name of the batch file
-	 * @throws FileNotFoundException if the file (or any file referenced within it) cannot be found
+	 * @throws IOException if the file (or any file referenced within it) cannot be found
 	 * @throws JsonException if the file (or any file referenced within it) is not properly formatted
 	 */
-	public static void main(String[] args) throws FileNotFoundException, JsonException {
+	public static void main(String[] args) throws IOException, JsonException {
 		if (args.length < 1) {
 			System.out.println("Missing parameters. Required: <batch-conf>");
 			System.exit(1);
