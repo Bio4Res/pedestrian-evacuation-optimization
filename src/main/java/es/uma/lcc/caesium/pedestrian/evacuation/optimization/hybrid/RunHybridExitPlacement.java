@@ -1,6 +1,5 @@
 package es.uma.lcc.caesium.pedestrian.evacuation.optimization.hybrid;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
