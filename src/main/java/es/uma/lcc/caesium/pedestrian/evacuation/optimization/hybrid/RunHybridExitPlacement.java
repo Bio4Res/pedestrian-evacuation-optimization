@@ -1,7 +1,7 @@
 package es.uma.lcc.caesium.pedestrian.evacuation.optimization.hybrid;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Locale;
 
@@ -41,10 +41,10 @@ public class RunHybridExitPlacement {
 	/**
 	 * Main method
 	 * @param args command-line arguments
-	 * @throws FileNotFoundException if configuration file cannot be read 
 	 * @throws JsonException if the configuration file is not correctly formatted
+	 * @throws IOException if files cannot be read/written
 	 */
-	public static void main(String[] args) throws FileNotFoundException, JsonException {
+	public static void main(String[] args) throws JsonException, IOException {
 		// set US locale
 		Locale.setDefault(Locale.US);
 
@@ -66,7 +66,7 @@ public class RunHybridExitPlacement {
 		conf.setVariationFactory(new HybridVariationFactory());
 		System.out.println(conf);
 		EvolutionaryAlgorithm myEA = new EvolutionaryAlgorithm(conf);
-		myEA.setVerbosityLevel(0);
+		myEA.setVerbosityLevel(1);
 		
 		// Configure the problem
 	    Environment environment = Environment.fromFile(ENVIRONMENT_FILENAME + args[1] + ".json");
