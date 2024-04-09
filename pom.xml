@@ -53,6 +53,11 @@
     	<artifactId>derivative-free-optimization</artifactId>
     	<version>1.0</version>
     </dependency>
+    <dependency>
+    	<groupId>es.uma.lcc.caesium</groupId>
+    	<artifactId>memetic-continuous</artifactId>
+    	<version>1.0</version>
+    </dependency>
   </dependencies>
   <build>
     <finalName>EA</finalName>
