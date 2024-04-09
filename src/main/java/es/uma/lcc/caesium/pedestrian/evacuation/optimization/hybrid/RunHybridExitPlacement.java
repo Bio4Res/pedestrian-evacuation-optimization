@@ -66,7 +66,7 @@ public class RunHybridExitPlacement {
 		conf.setVariationFactory(new HybridVariationFactory());
 		System.out.println(conf);
 		EvolutionaryAlgorithm myEA = new EvolutionaryAlgorithm(conf);
-		myEA.setVerbosityLevel(1);
+		myEA.setVerbosityLevel(0);
 		
 		// Configure the problem
 	    Environment environment = Environment.fromFile(ENVIRONMENT_FILENAME + args[1] + ".json");
