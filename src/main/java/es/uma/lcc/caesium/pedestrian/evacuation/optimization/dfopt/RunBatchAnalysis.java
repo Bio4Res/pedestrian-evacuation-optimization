@@ -1,6 +1,5 @@
 package es.uma.lcc.caesium.pedestrian.evacuation.optimization.dfopt;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -13,20 +12,20 @@ import es.uma.lcc.caesium.ea.util.JsonUtil;
 
 
 /**
- * Class for running experiments in batch using configurations of the derivative-free methods
- *
+ * Runs analysis in batch
+ * 
  * @author ccottap
  * @version 1.0
  */
-public class RunBatchDFO {
+public class RunBatchAnalysis {
 
 	/**
-	 * Main method
-	 * @param args commnad-line arguments (batch file)
-	 * @throws FileNotFoundException if the file (or any file referenced within it) cannot be found
+	 * Main method to run experiments in batch
+	 * @param args commnad-line arguments: name of the batch file
+	 * @throws IOException if the file (or any file referenced within it) cannot be found
 	 * @throws JsonException if the file (or any file referenced within it) is not properly formatted
 	 */
-	public static void main(String[] args) throws JsonException, IOException {
+	public static void main(String[] args) throws IOException, JsonException {
 		if (args.length < 1) {
 			System.out.println("Missing parameters. Required: <batch-conf>");
 			System.exit(1);
@@ -55,9 +54,9 @@ public class RunBatchDFO {
 			for (int i=first; i<=num; i++) {
 				params[1] = environment + "-" + String.valueOf(i);
 				System.out.println("--------------------------------------------------------------------------------");
-				System.out.println("Running " + params[0] + " " + params[1] + " " + params[2] + " " + params[3]);
+				System.out.println("Running analysis for " + params[0] + " " + params[1] + " " + params[2] + " " + params[3]);
 				System.out.println("--------------------------------------------------------------------------------");
-				RunDFO4PedestrianEvacuation.main(params);
+				RunTestAnalysis.main(params);
 			}
 
 		}
