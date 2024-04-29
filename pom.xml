@@ -124,6 +124,44 @@
             <goal>single</goal>
           </goals>
         </execution>
+        <execution>
+          <id>build-ma005</id>
+          <configuration>
+            <appendAssemblyId>false</appendAssemblyId>
+            <archive>
+              <manifest>
+                <mainClass>es.uma.lcc.caesium.pedestrian.evacuation.optimization.ma.RunMAExitPlacement</mainClass>
+              </manifest>
+            </archive>
+            <descriptorRefs>
+              <descriptorRef>jar-with-dependencies</descriptorRef>
+            </descriptorRefs>
+            <finalName>MA005</finalName>
+          </configuration>
+          <phase>package</phase>
+          <goals>
+            <goal>single</goal>
+          </goals>
+        </execution>
+        <execution>
+          <id>build-hooknelder</id>
+          <configuration>
+            <appendAssemblyId>false</appendAssemblyId>
+            <archive>
+              <manifest>
+                <mainClass>es.uma.lcc.caesium.pedestrian.evacuation.optimization.dfopt.RunDFO4PedestrianEvacuation</mainClass>
+              </manifest>
+            </archive>
+            <descriptorRefs>
+              <descriptorRef>jar-with-dependencies</descriptorRef>
+            </descriptorRefs>
+            <finalName>HOOKNELDER</finalName>
+          </configuration>
+          <phase>package</phase>
+          <goals>
+            <goal>single</goal>
+          </goals>
+        </execution>
       </executions>
     </plugin>
     </plugins>
