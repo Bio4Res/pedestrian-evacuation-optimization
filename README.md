@@ -23,4 +23,7 @@ Maven users: these dependencies are already included in the <code>pom.xml</code>
 
 ## References
 
-1. Carlos Cotta, José E. Gallardo, "Evolutionary Algorithms for Optimizing Emergency Exit Placement in Indoor Environments", _Applications of Evolutionary Computation – 27th International Conference, EvoApplications 2024_, Stephen Smith, João Correia and Christian Cintrano (eds.), Lecture Notes in Computer Science, Springer, Berlin, 2024 
+1. Carlos Cotta, José E. Gallardo, "Evolutionary Algorithms for Optimizing Emergency Exit Placement in Indoor Environments", _Applications of Evolutionary Computation – 27th International Conference, EvoApplications 2024_, Stephen Smith, João Correia and Christian Cintrano (eds.), Lecture Notes in Computer Science, Springer, Berlin, 2024
+2. C. Cotta, "Optimization-Driven Workplace Evacuation using Evolutionary Algorithms and Derivative-Free Methods Proceedings Article", _8th International Conference on Intelligent Systems, Metaheuristics & Swarm Intelligence_, 6p., ACM, Singapore, 2024 (forthcoming)
+3. C. Cotta, "Un Algoritmo Memético para la Optimización de la Evacuación de Interiores", _Actas del XV Congreso Español de Metaheurísticas, Algoritmos Evolutivos y Bioinspirados (MAEB)_, 5p., A Coruña, Spain, 2024 (forthcoming)
+4. C. Cotta, "Navigating the Aisles: Evolutionary Algorithms for Supermarket Evacuation Planning", _GECCO '24 Companion: Genetic and Evolutionary Computation Conference Companion Proceedings_, ACM, New York, NY, USA, 2 pages, 2024
